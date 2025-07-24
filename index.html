@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Game Collection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fafafa;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #gameContainer {
+      margin: 20px auto;
+      width: 100%;
+      max-width: 800px;
+      height: 600px;
+      border: 2px solid #ccc;
+    }
+
+    object {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .nav-buttons {
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 0 10px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h2>🧠 Puzzle Game Collection</h2>
+
+  <div id="gameContainer">
+    <object id="gameObject" type="text/html" data="game1.html"></object>
+  </div>
+
+  <div class="nav-buttons">
+    <button id="prevBtn">← Prev</button>
+    <button id="nextBtn">Next →</button>
+  </div>
+
+  <script>
+    const games = ["game1.html", "game2.html", "game3.html", "game4.html", "game5.html", "game6.html", "game7.html", "game8.html", "game10.html", "game11.html"];
+    let currentIndex = 0;
+
+    const gameObject = document.getElementById("gameObject");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function updateGame() {
+      gameObject.data = games[currentIndex];
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === games.length - 1;
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateGame();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < games.length - 1) {
+        currentIndex++;
+        updateGame();
+      }
+    });
+
+    // Initialize
+    updateGame();
+  </script>
+</body>
+</html>

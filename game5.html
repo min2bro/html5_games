@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weight Puzzle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 150px 150px;
+      grid-template-rows: 150px 150px;
+      gap: 20px;
+    }
+    .cell {
+      position: relative;
+      background: white;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-weight: bold;
+    }
+    .rectangle {
+      width: 40px;
+      height: 20px;
+      background: #555;
+      margin: 4px auto;
+    }
+    .triangle {
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 30px solid #f90;
+      margin: 4px auto;
+    }
+    .ball {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #2196F3;
+      margin: 4px auto;
+    }
+    .weight {
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+    .input-weight {
+      margin-top: 8px;
+      width: 30px;
+      padding: 4px;
+      text-align: center;
+      font-size: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+    }
+    .input-weight.correct {
+      border-color: green;
+      color: green;
+    }
+    .input-weight.incorrect {
+      border-color: red;
+      color: red;
+    }
+    .input-weight::-webkit-inner-spin-button,
+    .input-weight::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .input-weight {
+      -moz-appearance: textfield;
+    }
+    #feedback {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>Weight Puzzle</h2>
+  <p>What is the total weight of the fourth figure?</p>
+  <div class="grid">
+    <!-- Cell (0,0) -->
+    <div class="cell">
+      <div class="ball"></div>
+      <div class="rectangle"></div>
+      <div class="weight">10kg</div>
+    </div>
+
+    <!-- Cell (0,1) -->
+    <div class="cell">
+      <div class="ball"></div>
+      <div class="triangle"></div>
+      <div class="weight">20kg</div>
+    </div>
+
+    <!-- Cell (1,0) -->
+    <div class="cell">
+      <div class="triangle"></div>
+      <div class="rectangle"></div>
+      <div class="weight">24kg</div>
+    </div>
+
+    <!-- Cell (1,1) -->
+    <div class="cell">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="rectangle"></div>
+        <div class="ball"></div>
+      </div>
+      <div class="triangle"></div>
+      <input type="number" id="userWeight" class="input-weight" placeholder="?" maxlength="2" />
+    </div>
+  </div>
+
+  <div id="feedback"></div>
+
+  <script>
+    const input = document.getElementById("userWeight");
+    const feedback = document.getElementById("feedback");
+    const correctWeight = 27; // rectangle (7) + triangle (17) + ball (3)
+
+    input.addEventListener("input", () => {
+      const value = parseInt(input.value);
+      input.classList.remove("correct", "incorrect");
+      feedback.textContent = "";
+
+      if (!isNaN(value)) {
+        if (value === correctWeight) {
+          input.classList.add("correct");
+          feedback.style.color = "green";
+          feedback.textContent = "🎉 Correct! Well done.";
+        } else {
+          input.classList.add("incorrect");
+        }
+      }
+    });
+  </script>
+</body>
+</html>

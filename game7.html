@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shape Memory Challenge</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a2980, #26d0ce);
+      padding: 15px;
+    }
+
+    .game-container {
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(to right, #2c3e50, #4a6491);
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    .shapes-container {
+      padding: 20px;
+      background: #f8f9fa;
+      min-height: 350px;
+      position: relative;
+    }
+
+    .timer-container {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #e74c3c;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      min-width: 100px;
+      text-align: center;
+      z-index: 10;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .shape {
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .square {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 107, 107, 0.8);
+    }
+
+    .rectangle {
+      width: 120px;
+      height: 70px;
+      background: rgba(77, 171, 247, 0.8);
+    }
+
+    .hexagon {
+      width: 80px;
+      height: 80px;
+      background: rgba(106, 176, 76, 0.8);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+
+    .pentagon {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 206, 86, 0.8);
+      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+    }
+
+    .circle {
+      width: 80px;
+      height: 80px;
+      background: rgba(152, 103, 240, 0.8);
+      border-radius: 50%;
+    }
+
+    .questions-container {
+      padding: 25px 20px 20px;
+      display: none;
+    }
+
+    .question {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .question-text {
+      flex: 1;
+      font-weight: 500;
+      color: #2c3e50;
+      font-size: 1.1rem;
+    }
+
+    .answer-input {
+      width: 60px;
+      height: 50px;
+      border: 2px solid #3498db;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .answer-input.correct {
+      border-color: #2ecc71;
+      background: rgba(46, 204, 113, 0.1);
+    }
+
+    .answer-input.incorrect {
+      border-color: #e74c3c;
+      background: rgba(231, 76, 60, 0.1);
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .reset-btn {
+      background: linear-gradient(to right, #3498db, #2980b9);
+      color: white;
+    }
+
+    .congrats-message {
+      text-align: center;
+      padding: 15px;
+      margin: 15px auto;
+      max-width: 90%;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: none;
+      background: rgba(46, 204, 113, 0.2);
+      color: #27ae60;
+      border: 2px solid #2ecc71;
+    }
+
+    .instructions {
+      text-align: center;
+      padding: 10px 20px 20px;
+      color: #7f8c8d;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <header>
+      <h1>Shape Memory Challenge</h1>
+    </header>
+
+    <div class="shapes-container" id="shapesContainer">
+      <div class="shape square">A</div>
+      <div class="shape rectangle">B</div>
+      <div class="shape hexagon">C</div>
+      <div class="shape pentagon">D</div>
+      <div class="shape circle">E</div>
+      <div class="timer-container" id="timer">5s</div>
+    </div>
+
+    <div class="questions-container" id="questionsContainer">
+      <div class="congrats-message" id="congratsMessage">
+        <i class="fas fa-trophy"></i> Perfect Memory! Well done!
+      </div>
+
+      <div class="question">
+        <div class="question-text">Which letter was in the square?</div>
+        <input type="text" class="answer-input" id="answer1" maxlength="1">
+      </div>
+
+      <div class="question">
+        <div class="question-text">Which letter was in the pentagon?</div>
+        <input type="text" class="answer-input" id="answer2" maxlength="1">
+      </div>
+
+      <div class="question">
+        <div class="question-text">Which letter was in the circle?</div>
+        <input type="text" class="answer-input" id="answer3" maxlength="1">
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn reset-btn" id="resetBtn">
+        <i class="fas fa-redo"></i> View Shapes Again
+      </button>
+    </div>
+
+    <div class="instructions">
+      <p>Memorize the letters inside the scattered shapes! You have limited time.</p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const shapesContainer = document.getElementById('shapesContainer');
+      const questionsContainer = document.getElementById('questionsContainer');
+      const timerDisplay = document.getElementById('timer');
+      const resetBtn = document.getElementById('resetBtn');
+      const congratsMessage = document.getElementById('congratsMessage');
+      const answer1 = document.getElementById('answer1');
+      const answer2 = document.getElementById('answer2');
+      const answer3 = document.getElementById('answer3');
+      const shapes = document.querySelectorAll('.shape:not(.timer-container)');
+
+      let timer;
+      let seconds = 5;
+      let savedPositions = [];
+
+      const correctAnswers = {
+        square: 'A',
+        pentagon: 'D',
+        circle: 'E'
+      };
+
+      function generateInitialPositions() {
+        const containerRect = shapesContainer.getBoundingClientRect();
+        const placed = [];
+
+        savedPositions = [];
+
+        shapes.forEach(shape => {
+          const w = shape.offsetWidth;
+          const h = shape.offsetHeight;
+          let x, y, tries = 0;
+          let placedOk = false;
+
+          while (!placedOk && tries < 100) {
+            x = Math.random() * (containerRect.width - w - 20) + 10;
+            y = Math.random() * (containerRect.height - h - 20) + 10;
+
+            const newRect = { left: x, right: x + w, top: y, bottom: y + h };
+
+            const overlaps = placed.some(r =>
+              !(newRect.right < r.left || newRect.left > r.right || newRect.bottom < r.top || newRect.top > r.bottom)
+            );
+
+            const overlapsTimer = x + w > containerRect.width - 140 && y < 70;
+
+            if (!overlaps && !overlapsTimer) {
+              placed.push(newRect);
+              savedPositions.push({ element: shape, left: x, top: y });
+              placedOk = true;
+            }
+
+            tries++;
+          }
+        });
+      }
+
+      function applySavedPositions() {
+        savedPositions.forEach(pos => {
+          pos.element.style.left = pos.left + 'px';
+          pos.element.style.top = pos.top + 'px';
+        });
+      }
+
+      function startGame() {
+        generateInitialPositions();
+        showShapes();
+      }
+
+      function showShapes() {
+        shapesContainer.style.display = 'block';
+        questionsContainer.style.display = 'none';
+        congratsMessage.style.display = 'none';
+        [answer1, answer2, answer3].forEach(input => {
+          input.value = '';
+          input.classList.remove('correct', 'incorrect');
+        });
+
+        seconds = 5;
+        timerDisplay.textContent = seconds + 's';
+        timerDisplay.style.background = '#e74c3c';
+
+        applySavedPositions();
+
+        clearInterval(timer);
+        timer = setInterval(() => {
+          seconds--;
+          timerDisplay.textContent = seconds + 's';
+
+          if (seconds <= 3) {
+            timerDisplay.style.background = '#ff6b6b';
+          }
+
+          if (seconds <= 0) {
+            clearInterval(timer);
+            shapesContainer.style.display = 'none';
+            questionsContainer.style.display = 'block';
+            timerDisplay.textContent = 'Time Up!';
+          }
+        }, 1000);
+      }
+
+      function validateAnswers() {
+        validate(answer1, 'square');
+        validate(answer2, 'pentagon');
+        validate(answer3, 'circle');
+
+        if (
+          answer1.value.toUpperCase() === correctAnswers.square &&
+          answer2.value.toUpperCase() === correctAnswers.pentagon &&
+          answer3.value.toUpperCase() === correctAnswers.circle
+        ) {
+          congratsMessage.style.display = 'block';
+          timerDisplay.textContent = 'Perfect!';
+          timerDisplay.style.background = '#2ecc71';
+        }
+      }
+
+      function validate(input, shape) {
+        if (input.value.trim() === '') {
+          input.classList.remove('correct', 'incorrect');
+          return;
+        }
+
+        if (input.value.toUpperCase() === correctAnswers[shape]) {
+          input.classList.add('correct');
+          input.classList.remove('incorrect');
+        } else {
+          input.classList.add('incorrect');
+          input.classList.remove('correct');
+        }
+      }
+
+      resetBtn.addEventListener('click', showShapes);
+      [answer1, answer2, answer3].forEach(input => input.addEventListener('input', validateAnswers));
+
+      // Start on load
+      setTimeout(startGame, 300);
+    });
+  </script>
+</body>
+</html>

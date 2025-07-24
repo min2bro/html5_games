@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alien Word Invasion</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: black;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #instructions {
+      text-align: center;
+      padding: 10px;
+      background: #222;
+      width: 100%;
+      font-size: 1.1rem;
+      color: #0f0;
+    }
+
+    #scoreboard {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 500px;
+      padding: 10px;
+      font-size: 1rem;
+    }
+
+    #game {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      height: 75vh;
+      border: 2px solid #0f0;
+      background: #111;
+      overflow: hidden;
+    }
+
+    .alien {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 1.6rem;
+      animation: fall linear;
+    }
+
+    .emoji {
+      font-size: 2.5rem;
+    }
+
+    .word {
+      margin-top: 4px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    @keyframes fall {
+      from { top: -100px; }
+      to { top: 100%; }
+    }
+
+    #input-container {
+      margin-top: 10px;
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      justify-content: center;
+    }
+
+    input {
+      width: 80%;
+      font-size: 1.4rem;
+      padding: 12px;
+      border-radius: 5px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="instructions">
+    Type the correct spelling to destroy the robot invaders!
+  </div>
+
+  <div id="scoreboard">
+    <div>Score: <span id="score">0</span></div>
+    <div>Lives: <span id="lives">3</span></div>
+  </div>
+
+  <div id="game"></div>
+
+  <div id="input-container">
+    <input type="text" id="wordInput" placeholder="Type correct word..." autofocus autocomplete="off" />
+  </div>
+
+  <script>
+    const wordPairs = [
+      ['recieve', 'receive'],
+      ['definately', 'definitely'],
+      ['accomodate', 'accommodate'],
+      ['seperate', 'separate'],
+      ['untill', 'until'],
+      ['occured', 'occurred'],
+      ['adress', 'address'],
+      ['tomatos', 'tomatoes'],
+      ['wich', 'which'],
+      ['becuase', 'because'],
+      ['tommorow', 'tomorrow'],
+      ['embarass', 'embarrass'],
+      ['wierd', 'weird'],
+      ['goverment', 'government'],
+      ['thier', 'their'],
+      ['beleive', 'believe'],
+      ['enviroment', 'environment'],
+      ['freind', 'friend'],
+      ['happend', 'happened'],
+      ['writting', 'writing']
+    ];
+
+    let availableWords = [...wordPairs];
+    let score = 0;
+    let lives = 3;
+
+    const game = document.getElementById('game');
+    const wordInput = document.getElementById('wordInput');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+
+    function spawnAlien() {
+      if (availableWords.length === 0) {
+        availableWords = [...wordPairs];
+      }
+
+      const idx = Math.floor(Math.random() * availableWords.length);
+      const [wrong, correct] = availableWords.splice(idx, 1)[0];
+
+      const alien = document.createElement('div');
+      alien.classList.add('alien');
+      alien.style.left = `${Math.random() * 85}%`;
+      alien.style.animationDuration = `${4 + Math.random() * 2}s`;
+      alien.dataset.word = wrong;
+      alien.dataset.correct = correct;
+
+      const emoji = document.createElement('div');
+      emoji.classList.add('emoji');
+      emoji.textContent = '🤖';
+
+      const word = document.createElement('div');
+      word.classList.add('word');
+      word.textContent = wrong;
+
+      alien.appendChild(emoji);
+      alien.appendChild(word);
+      game.appendChild(alien);
+
+      const fallTime = parseFloat(alien.style.animationDuration) * 1000;
+
+      setTimeout(() => {
+        if (game.contains(alien)) {
+          game.removeChild(alien);
+          loseLife();
+        }
+      }, fallTime);
+    }
+
+    function loseLife() {
+      lives--;
+      livesEl.textContent = lives;
+      if (lives <= 0) {
+        endGame();
+      }
+    }
+
+    function endGame() {
+      clearInterval(gameInterval);
+      alert('Game Over! Final Score: ' + score);
+      location.reload();
+    }
+
+    wordInput.addEventListener('input', () => {
+      const typed = wordInput.value.trim().toLowerCase();
+      const aliens = document.querySelectorAll('.alien');
+      for (let alien of aliens) {
+        const correct = alien.dataset.correct;
+        if (typed === correct) {
+          game.removeChild(alien);
+          score += 10;
+          scoreEl.textContent = score;
+          wordInput.value = '';
+          break;
+        }
+      }
+    });
+
+    const gameInterval = setInterval(spawnAlien, 2000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word Ladder Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    .ladder {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+    .word-row {
+      margin-bottom: 20px;
+    }
+    .word-label {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .letter-boxes {
+      display: flex;
+      gap: 8px;
+    }
+    .letter-boxes input {
+      width: 40px;
+      height: 40px;
+      text-transform: uppercase;
+      text-align: center;
+      font-size: 1.2rem;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      transition: border-color 0.2s;
+    }
+    .letter-boxes input.correct {
+      border-color: green;
+    }
+    .letter-boxes input.incorrect {
+      border-color: red;
+    }
+    .start-target {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    #celebration {
+      display: none;
+      margin-top: 20px;
+      font-size: 1.4rem;
+      color: green;
+      animation: pop 1s ease-in-out infinite alternate;
+    }
+    @keyframes pop {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.1); }
+    }
+    .icon {
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="ladder">
+    <div class="start-target">Start Word: FIRE</div>
+
+    <div class="word-row">
+      <div class="word-label">1. Hint: To employ someone at a job <span class="icon">💼</span></div>
+      <div class="letter-boxes" id="step1"></div>
+    </div>
+
+    <div class="word-row">
+      <div class="word-label">2. Hint: The opposite of "there" — it’s right __ <span class="icon">📍</span></div>
+      <div class="letter-boxes" id="step2"></div>
+    </div>
+
+    <div class="word-row">
+      <div class="word-label">3. Hint: A group of cows <span class="icon">🐄</span></div>
+      <div class="letter-boxes" id="step3"></div>
+    </div>
+
+    <div class="word-row">
+      <div class="word-label">4. Hint: The part of your body that holds your brain <span class="icon">🧠</span></div>
+      <div class="letter-boxes" id="step4"></div>
+    </div>
+
+    <div class="start-target">Target Word: HEAT</div>
+
+    <div id="celebration">🎉 Puzzle Solved Successfully! 🎉</div>
+  </div>
+
+  <script>
+    const correctAnswers = ["HIRE", "HERE", "HERD", "HEAD"];
+
+    function createBoxes(stepId, answer) {
+      const container = document.getElementById(stepId);
+      for (let i = 0; i < 4; i++) {
+        const input = document.createElement("input");
+        input.maxLength = 1;
+        input.dataset.index = i;
+        input.dataset.step = stepId;
+        input.addEventListener("input", handleInput);
+        container.appendChild(input);
+      }
+    }
+
+    function handleInput(e) {
+      const input = e.target;
+      const step = input.dataset.step;
+      const index = parseInt(input.dataset.index);
+      const value = input.value.toUpperCase();
+      const stepNum = parseInt(step.replace("step", ""));
+      const correct = correctAnswers[stepNum - 1][index];
+
+      input.value = value;
+      input.classList.remove("correct", "incorrect");
+
+      if (value === "") return;
+
+      if (value === correct) {
+        input.classList.add("correct");
+        const nextIndex = index + 1;
+        const nextInput = document.querySelector(`#${step} input[data-index='${nextIndex}']`);
+        if (nextInput) {
+          nextInput.focus();
+        } else {
+          const nextStep = document.querySelector(`#step${stepNum + 1} input[data-index='0']`);
+          if (nextStep) {
+            nextStep.focus();
+          }
+        }
+      } else {
+        input.classList.add("incorrect");
+      }
+
+      checkSolved();
+    }
+
+    function checkSolved() {
+      let allCorrect = true;
+      correctAnswers.forEach((word, stepIndex) => {
+        for (let i = 0; i < 4; i++) {
+          const input = document.querySelector(`#step${stepIndex + 1} input[data-index='${i}']`);
+          if (!input || input.value.toUpperCase() !== word[i]) {
+            allCorrect = false;
+          }
+        }
+      });
+      document.getElementById("celebration").style.display = allCorrect ? "block" : "none";
+    }
+
+    correctAnswers.forEach((word, idx) => createBoxes(`step${idx + 1}`, word));
+  </script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Grid Puzzle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            padding: 15px;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        header {
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+        }
+        
+        .puzzle-container {
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 70px 30px 70px 30px 60px;
+            grid-template-rows: 70px 30px 70px 30px 60px;
+        }
+        
+        .cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .input-cell {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            background: #f8f9fa;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+        }
+        
+        .input-cell:focus {
+            outline: none;
+            background: #fff;
+        }
+        
+        .input-cell.correct {
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.1);
+        }
+        
+        .input-cell.incorrect {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+            animation: shake 0.5s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-3px); }
+            40%, 80% { transform: translateX(3px); }
+        }
+        
+        .operator {
+            font-size: 1.8rem;
+            color: #e74c3c;
+        }
+        
+        .equal {
+            font-size: 1.8rem;
+            color: #27ae60;
+        }
+        
+        .value {
+            background: #2ecc71;
+            color: white;
+            border-radius: 8px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+        }
+        
+        .reset-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #e74c3c;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            font-size: 1rem;
+        }
+        
+        .reset-btn:hover {
+            transform: rotate(90deg) scale(1.1);
+        }
+        
+        .success-indicator {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
+            transition: all 0.5s;
+            z-index: 10;
+        }
+        
+        .success-indicator.solved {
+            background: #2ecc71;
+            animation: pulse 2s infinite;
+        }
+        
+        .success-indicator.solved i {
+            color: white;
+            display: block;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @media (max-width: 480px) {
+            .grid {
+                grid-template-columns: 50px 25px 50px 25px 45px;
+                grid-template-rows: 50px 25px 50px 25px 45px;
+            }
+            
+            .input-cell, .value {
+                width: 45px;
+                height: 45px;
+                font-size: 1.5rem;
+            }
+            
+            .operator, .equal {
+                font-size: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Math Grid Puzzle</h1>
+        </header>
+        
+        <div class="success-indicator" id="successIndicator">
+            <i class="fas fa-check" style="display: none;"></i>
+        </div>
+        
+        <div class="reset-btn" id="resetBtn">
+            <i class="fas fa-redo"></i>
+        </div>
+        
+        <div class="puzzle-container">
+            <div class="grid">
+                <!-- Row 1 -->
+                <div class="cell" style="grid-column: 1; grid-row: 1;">
+                    <input type="number" class="input-cell" id="a">
+                </div>
+                <div class="cell operator" style="grid-column: 2; grid-row: 1;">-</div>
+                <div class="cell" style="grid-column: 3; grid-row: 1;">
+                    <input type="number" class="input-cell" id="b">
+                </div>
+                <div class="cell equal" style="grid-column: 4; grid-row: 1;">=</div>
+                <div class="cell value" style="grid-column: 5; grid-row: 1;">6</div>
+                
+                <!-- Row 2 -->
+                <div class="cell" style="grid-column: 1; grid-row: 3;">
+                    <input type="number" class="input-cell" id="c">
+                </div>
+                <div class="cell operator" style="grid-column: 2; grid-row: 3;">-</div>
+                <div class="cell value" style="grid-column: 3; grid-row: 3;">2</div>
+                <div class="cell equal" style="grid-column: 4; grid-row: 3;">=</div>
+                <div class="cell value" style="grid-column: 5; grid-row: 3;">10</div>
+                
+                <!-- Column 1 -->
+                <div class="cell operator" style="grid-column: 1; grid-row: 2;">+</div>
+                <div class="cell equal" style="grid-column: 1; grid-row: 4;">=</div>
+                <div class="cell value" style="grid-column: 1; grid-row: 5;">20</div>
+                
+                <!-- Column 2 -->
+                <div class="cell operator" style="grid-column: 3; grid-row: 2;">+</div>
+                <div class="cell equal" style="grid-column: 3; grid-row: 4;">=</div>
+                <div class="cell" style="grid-column: 3; grid-row: 5;">
+                    <input type="number" class="input-cell" id="d">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get elements
+            const aInput = document.getElementById('a');
+            const bInput = document.getElementById('b');
+            const cInput = document.getElementById('c');
+            const dInput = document.getElementById('d');
+            const resetBtn = document.getElementById('resetBtn');
+            const successIndicator = document.getElementById('successIndicator');
+            const checkIcon = successIndicator.querySelector('i');
+            
+            // Correct answers
+            const correctAnswers = {
+                a: 8,
+                b: 2,
+                c: 12,
+                d: 4
+            };
+            
+            // Validate individual input
+            function validateInput(input, id) {
+                const value = parseInt(input.value);
+                
+                if (isNaN(value)) {
+                    input.classList.remove('correct', 'incorrect');
+                    hideSuccess();
+                    return;
+                }
+                
+                if (value === correctAnswers[id]) {
+                    input.classList.add('correct');
+                    input.classList.remove('incorrect');
+                } else {
+                    input.classList.add('incorrect');
+                    input.classList.remove('correct');
+                    hideSuccess();
+                }
+                
+                checkAllCorrect();
+            }
+            
+            // Check if all answers are correct
+            function checkAllCorrect() {
+                const aCorrect = parseInt(aInput.value) === correctAnswers.a;
+                const bCorrect = parseInt(bInput.value) === correctAnswers.b;
+                const cCorrect = parseInt(cInput.value) === correctAnswers.c;
+                const dCorrect = parseInt(dInput.value) === correctAnswers.d;
+                
+                if (aCorrect && bCorrect && cCorrect && dCorrect) {
+                    showSuccess();
+                } else {
+                    hideSuccess();
+                }
+            }
+            
+            // Show success indicator
+            function showSuccess() {
+                successIndicator.classList.add('solved');
+                checkIcon.style.display = 'block';
+            }
+            
+            // Hide success indicator
+            function hideSuccess() {
+                successIndicator.classList.remove('solved');
+                checkIcon.style.display = 'none';
+            }
+            
+            // Reset all inputs
+            function resetAll() {
+                aInput.value = '';
+                bInput.value = '';
+                cInput.value = '';
+                dInput.value = '';
+                
+                aInput.classList.remove('correct', 'incorrect');
+                bInput.classList.remove('correct', 'incorrect');
+                cInput.classList.remove('correct', 'incorrect');
+                dInput.classList.remove('correct', 'incorrect');
+                
+                hideSuccess();
+                
+                aInput.focus();
+            }
+            
+            // Add event listeners
+            aInput.addEventListener('input', () => validateInput(aInput, 'a'));
+            bInput.addEventListener('input', () => validateInput(bInput, 'b'));
+            cInput.addEventListener('input', () => validateInput(cInput, 'c'));
+            dInput.addEventListener('input', () => validateInput(dInput, 'd'));
+            
+            resetBtn.addEventListener('click', resetAll);
+            
+            // Focus first input on load
+            aInput.focus();
+        });
+    </script>
+</body>
+</html>

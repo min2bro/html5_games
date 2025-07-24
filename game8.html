@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiples Dash</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            padding: 15px;
+            overflow: hidden;
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        header {
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 1.4rem;
+            flex-grow: 1;
+        }
+        
+        .instruction {
+            text-align: center;
+            padding: 10px;
+            background: #f1c40f;
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 1rem;
+            border-bottom: 2px solid #d35400;
+        }
+        
+        .target-container {
+            padding: 15px;
+            text-align: center;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .target-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .target-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #e74c3c;
+            height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .game-area {
+            height: 200px;
+            background: #e9f5ff;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .number {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            right: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .number:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .number.correct {
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .number.incorrect {
+            background: linear-gradient(to bottom, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .number.neutral {
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        
+        .stat-box {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            padding: 15px;
+            gap: 15px;
+            background: #f8f9fa;
+        }
+        
+        .icon-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: none;
+        }
+        
+        .start-btn {
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .pause-btn {
+            background: linear-gradient(to bottom, #f39c12, #d35400);
+            color: white;
+        }
+        
+        .reset-btn {
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .icon-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .icon-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .instructions {
+            text-align: center;
+            padding: 15px 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 10;
+            display: none;
+        }
+        
+        .final-score {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #f1c40f;
+        }
+        
+        .restart-btn {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .speed-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 10px 20px;
+            overflow: hidden;
+        }
+        
+        .speed-level {
+            height: 100%;
+            background: linear-gradient(to right, #2ecc71, #f1c40f, #e74c3c);
+            width: 30%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        @media (max-width: 480px) {
+            .game-container {
+                max-width: 100%;
+            }
+            
+            .instruction {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+            
+            h1 {
+                font-size: 1.2rem;
+            }
+            
+            .target-number {
+                font-size: 2.5rem;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .game-area {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <i class="fas fa-bolt"></i>
+            <h1>Multiples Dash</h1>
+            <i class="fas fa-times"></i>
+        </header>
+        
+        <div class="instruction">Click only the multiples of the flashing target number!</div>
+        
+        <div class="target-container">
+            <div class="target-label">FLASHING TARGET</div>
+            <div class="target-number" id="targetNumber">5</div>
+        </div>
+        
+        <div class="speed-bar">
+            <div class="speed-level" id="speedLevel"></div>
+        </div>
+        
+        <div class="game-area" id="gameArea">
+            <!-- Numbers will be generated here -->
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">SCORE</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="lives">3</div>
+                <div class="stat-label">LIVES</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="level">1</div>
+                <div class="stat-label">LEVEL</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="icon-btn start-btn" id="startBtn">
+                <i class="fas fa-play"></i>
+            </button>
+            <button class="icon-btn pause-btn" id="pauseBtn">
+                <i class="fas fa-pause"></i>
+            </button>
+            <button class="icon-btn reset-btn" id="resetBtn">
+                <i class="fas fa-redo"></i>
+            </button>
+        </div>
+        
+        <div class="instructions">
+            <p>Tap numbers that are multiples of the flashing number. Speed increases as you score!</p>
+        </div>
+        
+        <div class="game-over" id="gameOver">
+            <div class="final-score">Score: <span id="finalScore">0</span></div>
+            <button class="restart-btn" id="restartBtn">
+                <i class="fas fa-redo"></i> Play Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const gameArea = document.getElementById('gameArea');
+            const targetNumber = document.getElementById('targetNumber');
+            const scoreDisplay = document.getElementById('score');
+            const livesDisplay = document.getElementById('lives');
+            const levelDisplay = document.getElementById('level');
+            const startBtn = document.getElementById('startBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            const gameOver = document.getElementById('gameOver');
+            const finalScore = document.getElementById('finalScore');
+            const speedLevel = document.getElementById('speedLevel');
+            
+            let score = 0;
+            let lives = 3;
+            let level = 1;
+            let gameActive = false;
+            let gameSpeed = 2000; // ms between new numbers
+            let scrollSpeed = 2; // pixels per frame
+            let target = 5;
+            let animationFrame;
+            let gameInterval;
+            let difficultyInterval;
+            let targetInterval;
+            
+            // Initialize the game
+            function initGame() {
+                gameArea.innerHTML = '';
+                score = 0;
+                lives = 3;
+                level = 1;
+                gameSpeed = 2000;
+                scrollSpeed = 2;
+                updateTarget();
+                updateDisplay();
+                speedLevel.style.width = '30%';
+                
+                // Clear any existing intervals
+                clearInterval(gameInterval);
+                clearInterval(difficultyInterval);
+                clearInterval(targetInterval);
+            }
+            
+            // Update target number with animation
+            function updateTarget() {
+                // Flash animation
+                targetNumber.style.animation = 'none';
+                setTimeout(() => {
+                    targetNumber.style.animation = 'pulse 1.5s infinite';
+                    target = Math.floor(Math.random() * 9) + 2; // 2-10
+                    targetNumber.textContent = target;
+                }, 50);
+            }
+            
+            // Update game display
+            function updateDisplay() {
+                scoreDisplay.textContent = score;
+                livesDisplay.textContent = lives;
+                levelDisplay.textContent = level;
+            }
+            
+            // Generate a new number
+            function generateNumber() {
+                if (!gameActive) return;
+                
+                const number = document.createElement('div');
+                number.className = 'number neutral';
+                
+                // Random value between 1 and 100
+                const value = Math.floor(Math.random() * 100) + 1;
+                number.textContent = value;
+                
+                // Set random vertical position (avoiding edges)
+                const minTop = 30; // Minimum distance from top
+                const maxTop = gameArea.offsetHeight - 80; // Minimum distance from bottom
+                const topPos = minTop + Math.random() * (maxTop - minTop);
+                number.style.top = `${topPos}px`;
+                
+                // Set data attribute for value
+                number.dataset.value = value;
+                
+                // Add click event
+                number.addEventListener('click', handleNumberClick);
+                
+                gameArea.appendChild(number);
+                
+                // Animate the number
+                animateNumber(number);
+            }
+            
+            // Animate number from right to left
+            function animateNumber(element) {
+                let position = gameArea.offsetWidth;
+                
+                function move() {
+                    if (!gameActive) return;
+                    
+                    position -= scrollSpeed;
+                    element.style.right = `${position}px`;
+                    
+                    // Remove when out of view
+                    if (position < -60) {
+                        element.remove();
+                        return;
+                    }
+                    
+                    animationFrame = requestAnimationFrame(move);
+                }
+                
+                move();
+            }
+            
+            // Handle number click
+            function handleNumberClick(e) {
+                if (!gameActive) return;
+                
+                const number = e.target;
+                const value = parseInt(number.dataset.value);
+                
+                // Check if multiple
+                if (value % target === 0) {
+                    // Correct
+                    number.classList.remove('neutral');
+                    number.classList.add('correct');
+                    score += level * 10;
+                    
+                    // Add animation
+                    number.style.transform = 'scale(1.5)';
+                    number.style.opacity = '0';
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        number.remove();
+                    }, 300);
+                } else {
+                    // Incorrect
+                    number.classList.remove('neutral');
+                    number.classList.add('incorrect');
+                    lives--;
+                    
+                    // Add animation
+                    number.style.transform = 'scale(1.2)';
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        number.remove();
+                    }, 500);
+                    
+                    // Check game over
+                    if (lives <= 0) {
+                        endGame();
+                    }
+                }
+                
+                updateDisplay();
+            }
+            
+            // Start the game
+            function startGame() {
+                if (gameActive) return;
+                
+                gameActive = true;
+                startBtn.querySelector('i').className = 'fas fa-play';
+                startBtn.disabled = true;
+                
+                // Start generating numbers
+                gameInterval = setInterval(generateNumber, gameSpeed);
+                
+                // Update target periodically
+                targetInterval = setInterval(updateTarget, 8000);
+                
+                // Increase difficulty over time (linear progression)
+                difficultyInterval = setInterval(increaseDifficulty, 5000);
+            }
+            
+            // Pause the game
+            function pauseGame() {
+                gameActive = !gameActive;
+                
+                if (gameActive) {
+                    pauseBtn.querySelector('i').className = 'fas fa-pause';
+                    startBtn.disabled = true;
+                } else {
+                    pauseBtn.querySelector('i').className = 'fas fa-play';
+                    startBtn.disabled = false;
+                }
+            }
+            
+            // Increase game difficulty linearly
+            function increaseDifficulty() {
+                if (!gameActive) return;
+                
+                level++;
+                
+                // Linear progression
+                gameSpeed = Math.max(800, gameSpeed - 100);
+                scrollSpeed += 0.3;
+                
+                // Update speed indicator
+                const speedPercentage = Math.min(100, 30 + (level * 5));
+                speedLevel.style.width = `${speedPercentage}%`;
+                
+                updateDisplay();
+            }
+            
+            // End the game
+            function endGame() {
+                gameActive = false;
+                clearInterval(gameInterval);
+                clearInterval(difficultyInterval);
+                clearInterval(targetInterval);
+                cancelAnimationFrame(animationFrame);
+                
+                finalScore.textContent = score;
+                gameOver.style.display = 'flex';
+            }
+            
+            // Restart the game
+            function restartGame() {
+                gameOver.style.display = 'none';
+                initGame();
+                startGame();
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', startGame);
+            pauseBtn.addEventListener('click', pauseGame);
+            resetBtn.addEventListener('click', initGame);
+            restartBtn.addEventListener('click', restartGame);
+            
+            // Initialize the game
+            initGame();
+        });
+    </script>
+</body>
+</html>

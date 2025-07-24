@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Math Maze Slider</title>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <style>
+       * {
+           margin: 0;
+           padding: 0;
+           box-sizing: border-box;
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       }
+
+       body {
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           min-height: 100vh;
+           background: linear-gradient(135deg, #1a2980, #26d0ce);
+           padding: 20px;
+           overflow: hidden;
+       }
+
+       .game-container {
+           width: 100%;
+           max-width: 500px;
+           background: rgba(255, 255, 255, 0.95);
+           border-radius: 15px;
+           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+           overflow: hidden;
+           position: relative;
+       }
+
+       header {
+           background: linear-gradient(to right, #2c3e50, #4a6491);
+           color: white;
+           padding: 15px;
+           text-align: center;
+           position: relative;
+       }
+
+       h1 {
+           font-size: 1.6rem;
+       }
+
+       .stats-container {
+           display: flex;
+           justify-content: space-around;
+           padding: 15px;
+           background: #f8f9fa;
+           border-bottom: 2px solid #e0e0e0;
+       }
+
+       .stat-box {
+           text-align: center;
+           padding: 10px;
+           border-radius: 10px;
+           background: white;
+           box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+           min-width: 80px;
+       }
+
+       .stat-value {
+           font-size: 1.5rem;
+           font-weight: bold;
+           color: #2c3e50;
+       }
+
+       .stat-label {
+           font-size: 0.8rem;
+           color: #7f8c8d;
+           margin-top: 5px;
+       }
+
+       .maze-container {
+           padding: 20px;
+           display: flex;
+           justify-content: center;
+           background: #e9f5ff;
+       }
+
+       .maze-grid {
+           display: grid;
+           grid-template-columns: repeat(5, 60px);
+           grid-template-rows: repeat(5, 60px);
+           gap: 8px;
+       }
+
+       .cell {
+           width: 60px;
+           height: 60px;
+           border-radius: 8px;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           font-weight: bold;
+           font-size: 1.4rem;
+           box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+           transition: all 0.3s ease;
+           position: relative;
+           overflow: hidden;
+       }
+
+       .empty {
+           background: #f0f0f0;
+       }
+
+       .start {
+           background: linear-gradient(to bottom, #2ecc71, #27ae60);
+           color: white;
+       }
+
+       .goal {
+           background: linear-gradient(to bottom, #e74c3c, #c0392b);
+           color: white;
+       }
+
+       .operation {
+           background: linear-gradient(to bottom, #3498db, #2980b9);
+           color: white;
+       }
+
+       .block {
+           background: linear-gradient(to bottom, #f1c40f, #f39c12);
+           color: white;
+           transform: scale(1.05);
+           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+           z-index: 2;
+           animation: pulse 1.5s infinite;
+       }
+
+       @keyframes pulse {
+           0% {
+               transform: scale(1.05);
+           }
+
+           50% {
+               transform: scale(1.1);
+           }
+
+           100% {
+               transform: scale(1.05);
+           }
+       }
+
+       .operation span {
+           font-size: 1.2rem;
+       }
+
+       .controls {
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           padding: 20px;
+           background: #f8f9fa;
+       }
+
+       .arrow-controls {
+           display: grid;
+           grid-template-columns: repeat(3, 60px);
+           grid-template-rows: repeat(2, 60px);
+           gap: 8px;
+           margin-bottom: 20px;
+       }
+
+       .arrow-btn {
+           width: 60px;
+           height: 60px;
+           border-radius: 10px;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           font-size: 1.8rem;
+           cursor: pointer;
+           transition: all 0.3s;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+           background: linear-gradient(to bottom, #3498db, #2980b9);
+           color: white;
+           border: none;
+       }
+
+       .arrow-btn:active {
+           transform: translateY(3px);
+           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+       }
+
+       .arrow-btn.up {
+           grid-column: 2;
+           grid-row: 1;
+       }
+
+       .arrow-btn.down {
+           grid-column: 2;
+           grid-row: 2;
+       }
+
+       .arrow-btn.left {
+           grid-column: 1;
+           grid-row: 2;
+       }
+
+       .arrow-btn.right {
+           grid-column: 3;
+           grid-row: 2;
+       }
+
+       .action-btns {
+           display: flex;
+           gap: 15px;
+       }
+
+       .action-btn {
+           padding: 12px 25px;
+           font-size: 1rem;
+           font-weight: 600;
+           border: none;
+           border-radius: 50px;
+           cursor: pointer;
+           transition: all 0.3s;
+           display: flex;
+           align-items: center;
+           gap: 10px;
+           box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+       }
+
+       .action-btn:hover {
+           transform: translateY(-3px);
+           box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+       }
+
+       .action-btn:active {
+           transform: translateY(1px);
+       }
+
+       .reset-btn {
+           background: linear-gradient(to right, #e74c3c, #c0392b);
+           color: white;
+       }
+
+       .next-btn {
+           background: linear-gradient(to right, #2ecc71, #27ae60);
+           color: white;
+           display: none;
+       }
+
+       .instructions {
+           text-align: center;
+           padding: 15px 20px;
+           color: #7f8c8d;
+           font-size: 0.9rem;
+           background: #f8f9fa;
+           border-top: 1px solid #e0e0e0;
+       }
+
+       .message {
+           position: absolute;
+           top: 50%;
+           left: 50%;
+           transform: translate(-50%, -50%);
+           background: rgba(0, 0, 0, 0.85);
+           color: white;
+           padding: 20px 40px;
+           border-radius: 15px;
+           font-size: 1.8rem;
+           font-weight: bold;
+           text-align: center;
+           z-index: 10;
+           display: none;
+           animation: popIn 0.5s ease;
+           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+       }
+
+       @keyframes popIn {
+           0% {
+               transform: translate(-50%, -50%) scale(0.5);
+               opacity: 0;
+           }
+
+           100% {
+               transform: translate(-50%, -50%) scale(1);
+               opacity: 1;
+           }
+       }
+
+       .message.success {
+           background: rgba(46, 204, 113, 0.9);
+       }
+
+       .message.fail {
+           background: rgba(231, 76, 60, 0.9);
+       }
+
+       .level-indicator {
+           position: absolute;
+           top: 15px;
+           left: 15px;
+           background: rgba(0, 0, 0, 0.6);
+           color: white;
+           padding: 5px 15px;
+           border-radius: 20px;
+           font-weight: bold;
+       }
+
+       @media (max-width: 480px) {
+           .maze-grid {
+               grid-template-columns: repeat(5, 50px);
+               grid-template-rows: repeat(5, 50px);
+           }
+
+           .cell {
+               width: 50px;
+               height: 50px;
+               font-size: 1.2rem;
+           }
+
+           .arrow-controls {
+               grid-template-columns: repeat(3, 50px);
+               grid-template-rows: repeat(2, 50px);
+           }
+
+           .arrow-btn {
+               width: 50px;
+               height: 50px;
+               font-size: 1.5rem;
+           }
+
+           h1 {
+               font-size: 1.4rem;
+           }
+
+           .stat-box {
+               min-width: 70px;
+               padding: 8px;
+           }
+
+           .stat-value {
+               font-size: 1.3rem;
+           }
+       }
+   </style>
+</head>
+
+<body>
+   <div class="game-container">
+       <div class="level-indicator">Level 1</div>
+
+       <header>
+           <h1>Math Maze Slider</h1>
+       </header>
+
+       <div class="stats-container">
+           <div class="stat-box">
+               <div class="stat-value" id="currentValue">3</div>
+               <div class="stat-label">CURRENT</div>
+           </div>
+           <div class="stat-box">
+               <div class="stat-value" id="targetValue">15</div>
+               <div class="stat-label">TARGET</div>
+           </div>
+           <div class="stat-box">
+               <div class="stat-value" id="moves">0</div>
+               <div class="stat-label">MOVES</div>
+           </div>
+       </div>
+
+       <div class="maze-container">
+           <div class="maze-grid" id="mazeGrid">
+               <!-- Maze grid will be generated here -->
+           </div>
+       </div>
+
+       <div class="controls">
+           <div class="arrow-controls">
+               <button class="arrow-btn up" id="upBtn">↑</button>
+               <button class="arrow-btn left" id="leftBtn">←</button>
+               <button class="arrow-btn right" id="rightBtn">→</button>
+               <button class="arrow-btn down" id="downBtn">↓</button>
+           </div>
+
+           <div class="action-btns">
+               <button class="action-btn reset-btn" id="resetBtn">
+                   <i class="fas fa-redo"></i> Reset
+               </button>
+               <button class="action-btn next-btn" id="nextBtn">
+                   <i class="fas fa-arrow-right"></i> Next Level
+               </button>
+           </div>
+       </div>
+
+       <div class="instructions">
+           <p>Slide the yellow block to the red goal with the target value using math operations</p>
+       </div>
+
+       <div class="message" id="message"></div>
+   </div>
+
+   <script>
+       document.addEventListener('DOMContentLoaded', () => {
+           const mazeGrid = document.getElementById('mazeGrid');
+           const currentValueDisplay = document.getElementById('currentValue');
+           const targetValueDisplay = document.getElementById('targetValue');
+           const movesDisplay = document.getElementById('moves');
+           const upBtn = document.getElementById('upBtn');
+           const downBtn = document.getElementById('downBtn');
+           const leftBtn = document.getElementById('leftBtn');
+           const rightBtn = document.getElementById('rightBtn');
+           const resetBtn = document.getElementById('resetBtn');
+           const nextBtn = document.getElementById('nextBtn');
+           const message = document.getElementById('message');
+
+           // Game state
+           let currentLevel = 1;
+           let currentValue = 3;
+           let targetValue = 15;
+           let moves = 0;
+           let blockPosition = { row: 0, col: 0 };
+           let goalPosition = { row: 4, col: 4 };
+           let grid = [];
+           let gameActive = true;
+
+           // Level definitions - UPDATED WITH SOLVABLE LEVEL 1
+           const levels = [
+               // Level 1 - SOLVABLE IN 6 MOVES
+               {
+                   grid: [
+                       ['S', '×2', '', '×3', ''],
+                       ['', '', '+3', '', ''],
+                       ['+1', '×2', '', '-2', ''],
+                       ['', '', '×3', '', ''],
+                       ['', '+4', '', '', 'G']
+                   ],
+                   start: { row: 0, col: 0 },
+                   goal: { row: 4, col: 4 },
+                   startValue: 3,
+                   targetValue: 15,
+                   maxMoves: 15
+               },
+               // Level 2
+               {
+                   grid: [
+                       ['S', '×2', '', '+3', ''],
+                       ['', '', '×3', '', '-2'],
+                       ['-1', '×2', '', '+4', ''],
+                       ['', '+2', '', '×2', ''],
+                       ['×3', '', '-1', '', 'G']
+                   ],
+                   start: { row: 0, col: 0 },
+                   goal: { row: 4, col: 4 },
+                   startValue: 2,
+                   targetValue: 48,
+                   maxMoves: 12
+               },
+               // Level 3
+               {
+                   grid: [
+                       ['S', '×3', '', '+5', ''],
+                       ['', '', '×2', '', '-3'],
+                       ['+4', '', '×4', '', '+2'],
+                       ['', '×3', '', '-4', ''],
+                       ['-2', '', '+6', '', 'G']
+                   ],
+                   start: { row: 0, col: 0 },
+                   goal: { row: 4, col: 4 },
+                   startValue: 1,
+                   targetValue: 60,
+                   maxMoves: 10
+               }
+           ];
+
+           // Initialize the game
+           function initGame() {
+               const level = levels[currentLevel - 1];
+               grid = level.grid;
+               blockPosition = { ...level.start };
+               goalPosition = { ...level.goal };
+               currentValue = level.startValue;
+               targetValue = level.targetValue;
+               moves = 0;
+               gameActive = true;
+
+               document.querySelector('.level-indicator').textContent = `Level ${currentLevel}`;
+               currentValueDisplay.textContent = currentValue;
+               targetValueDisplay.textContent = targetValue;
+               movesDisplay.textContent = moves;
+               nextBtn.style.display = 'none';
+               message.style.display = 'none';
+
+               renderGrid();
+           }
+
+           // Render the grid
+           function renderGrid() {
+               mazeGrid.innerHTML = '';
+
+               for (let row = 0; row < 5; row++) {
+                   for (let col = 0; col < 5; col++) {
+                       const cell = document.createElement('div');
+                       cell.className = 'cell';
+
+                       // Set cell content and style
+                       const cellContent = grid[row][col];
+
+                       if (row === blockPosition.row && col === blockPosition.col) {
+                           cell.className += ' block';
+                           cell.textContent = currentValue;
+                       } else if (row === goalPosition.row && col === goalPosition.col) {
+                           cell.className += ' goal';
+                           cell.textContent = 'G';
+                       } else if (cellContent === 'S' || cellContent === '') {
+                           cell.className += ' empty';
+                       } else {
+                           cell.className += ' operation';
+                           cell.innerHTML = `<span>${cellContent}</span>`;
+                       }
+
+                       mazeGrid.appendChild(cell);
+                   }
+               }
+           }
+
+           // Move the block - FIXED VERSION
+           function moveBlock(direction) {
+               if (!gameActive) return;
+
+               let newRow = blockPosition.row;
+               let newCol = blockPosition.col;
+
+               // Calculate new position
+               switch (direction) {
+                   case 'up':
+                       if (newRow > 0) newRow--;
+                       break;
+                   case 'down':
+                       if (newRow < 4) newRow++;
+                       break;
+                   case 'left':
+                       if (newCol > 0) newCol--;
+                       break;
+                   case 'right':
+                       if (newCol < 4) newCol++;
+                       break;
+               }
+
+               // Check if the move is valid (not staying in same position)
+               if (newRow === blockPosition.row && newCol === blockPosition.col) {
+                   return;
+               }
+
+               // Update position
+               blockPosition = { row: newRow, col: newCol };
+               moves++;
+               movesDisplay.textContent = moves;
+
+               // Apply operation if any
+               const operation = grid[newRow][newCol];
+               if (operation && operation !== 'S' && operation !== 'G') {
+                   applyOperation(operation);
+               }
+
+               // Check win condition FIRST (before move limit)
+               if (newRow === goalPosition.row && newCol === goalPosition.col) {
+                   if (currentValue === targetValue) {
+                       showMessage('Level Complete!', 'success');
+                       if (currentLevel < levels.length) {
+                           nextBtn.style.display = 'flex';
+                       }
+                       gameActive = false;
+                       renderGrid();
+                       return; // Exit early on win
+                   } else {
+                       showMessage('Wrong Value!', 'fail');
+                   }
+               }
+
+               // Check move limit AFTER win condition
+               if (moves >= levels[currentLevel - 1].maxMoves) {
+                   showMessage('Out of Moves!', 'fail');
+                   gameActive = false;
+               }
+
+               renderGrid();
+           }
+
+           // Apply math operation
+           function applyOperation(op) {
+               const operator = op.charAt(0);
+               const value = parseInt(op.substring(1));
+
+               switch (operator) {
+                   case '+':
+                       currentValue += value;
+                       break;
+                   case '-':
+                       currentValue -= value;
+                       break;
+                   case '×':
+                       currentValue *= value;
+                       break;
+               }
+
+               currentValueDisplay.textContent = currentValue;
+           }
+
+           // Show message
+           function showMessage(text, type) {
+               message.textContent = text;
+               message.className = `message ${type}`;
+               message.style.display = 'block';
+
+               setTimeout(() => {
+                   message.style.display = 'none';
+               }, 2000);
+           }
+
+           // Event listeners
+           upBtn.addEventListener('click', () => moveBlock('up'));
+           downBtn.addEventListener('click', () => moveBlock('down'));
+           leftBtn.addEventListener('click', () => moveBlock('left'));
+           rightBtn.addEventListener('click', () => moveBlock('right'));
+
+           resetBtn.addEventListener('click', () => initGame());
+
+           nextBtn.addEventListener('click', () => {
+               currentLevel++;
+               initGame();
+           });
+
+           // Keyboard controls
+           document.addEventListener('keydown', (e) => {
+               if (!gameActive) return;
+
+               switch (e.key) {
+                   case 'ArrowUp':
+                       moveBlock('up');
+                       break;
+                   case 'ArrowDown':
+                       moveBlock('down');
+                       break;
+                   case 'ArrowLeft':
+                       moveBlock('left');
+                       break;
+                   case 'ArrowRight':
+                       moveBlock('right');
+                       break;
+               }
+           });
+
+           // Start the game
+           initGame();
+       });
+   </script>
+</body>
+
+</html>

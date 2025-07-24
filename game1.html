@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Number Ball Sum Game</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #ff6b6b;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .target {
+            font-size: 2.5em;
+            margin: 20px;
+            color: #4ecdc4;
+            font-weight: bold;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .ball {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fff, #ff9e9e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px;
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            user-select: none;
+        }
+        
+        .ball:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        
+        .ball.selected {
+            background: radial-gradient(circle at 30% 30%, #fff, #a5ffa5);
+            transform: scale(1.1);
+        }
+        
+        .message {
+            font-size: 2em;
+            margin: 20px;
+            min-height: 60px;
+            color: #ff6b6b;
+        }
+        
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+        }
+        
+        button {
+            background-color: #4ecdc4;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 20px 2px;
+            cursor: pointer;
+            border-radius: 25px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #ff6b6b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body>
+    <h1>Number Ball Sum Game</h1>
+    <p>Click on 3 balls that add up to the target number!</p>
+    
+    <div class="target">Target: <span id="targetNumber">0</span></div>
+    <div class="message" id="message"></div>
+    
+    <div class="game-area" id="gameArea"></div>
+    
+    <button id="newGameBtn">New Game</button>
+    
+    <div class="celebration" id="celebration"></div>
+    
+    <script>
+        // Game variables
+        let selectedBalls = [];
+        let targetSum = 0;
+        const ballsCount = 12;
+        const ballsToSelect = 3;
+        
+        // DOM elements
+        const gameArea = document.getElementById('gameArea');
+        const targetNumberEl = document.getElementById('targetNumber');
+        const messageEl = document.getElementById('message');
+        const newGameBtn = document.getElementById('newGameBtn');
+        const celebrationEl = document.getElementById('celebration');
+        
+        // Initialize the game
+        function initGame() {
+            // Clear previous game
+            gameArea.innerHTML = '';
+            selectedBalls = [];
+            messageEl.textContent = '';
+            
+            // Generate random target sum between 15 and 40
+            targetSum = Math.floor(Math.random() * 26) + 15;
+            targetNumberEl.textContent = targetSum;
+            
+            // Generate balls with random numbers
+            const ballNumbers = generateBallNumbers();
+            
+            // Create ball elements
+            ballNumbers.forEach((num, index) => {
+                const ball = document.createElement('div');
+                ball.className = 'ball';
+                ball.textContent = num;
+                ball.dataset.value = num;
+                ball.dataset.index = index;
+                ball.addEventListener('click', handleBallClick);
+                gameArea.appendChild(ball);
+            });
+        }
+        
+        // Generate numbers for balls ensuring there's at least one valid combination
+        function generateBallNumbers() {
+            const numbers = [];
+            
+            // First generate 3 numbers that sum to our target
+            let num1 = Math.floor(Math.random() * (targetSum - 2)) + 1;
+            let num2 = Math.floor(Math.random() * (targetSum - num1 - 1)) + 1;
+            let num3 = targetSum - num1 - num2;
+            
+            // Add our solution numbers
+            numbers.push(num1, num2, num3);
+            
+            // Fill the rest with random numbers (1-20)
+            while (numbers.length < ballsCount) {
+                numbers.push(Math.floor(Math.random() * 20) + 1);
+            }
+            
+            // Shuffle the array
+            return shuffleArray(numbers);
+        }
+        
+        // Fisher-Yates shuffle algorithm
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+        
+        // Handle ball clicks
+        function handleBallClick(event) {
+            const ball = event.target;
+            const value = parseInt(ball.dataset.value);
+            const index = ball.dataset.index;
+            
+            // If ball is already selected, deselect it
+            if (ball.classList.contains('selected')) {
+                ball.classList.remove('selected');
+                selectedBalls = selectedBalls.filter(b => b.index !== index);
+                messageEl.textContent = '';
+                return;
+            }
+            
+            // If we already have 3 selected, do nothing
+            if (selectedBalls.length >= ballsToSelect) {
+                messageEl.textContent = `You can only select ${ballsToSelect} balls!`;
+                return;
+            }
+            
+            // Select the ball
+            ball.classList.add('selected');
+            selectedBalls.push({ value, index, element: ball });
+            
+            // If we have 3 selected, check the sum
+            if (selectedBalls.length === ballsToSelect) {
+                checkSum();
+            }
+        }
+        
+        // Check if selected balls sum to target
+        function checkSum() {
+            const sum = selectedBalls.reduce((total, ball) => total + ball.value, 0);
+            
+            if (sum === targetSum) {
+                messageEl.textContent = 'Correct! Well done!';
+                messageEl.style.color = '#4ecdc4';
+                celebrate();
+                setTimeout(initGame, 3000); // Start new game after celebration
+            } else {
+                messageEl.textContent = `Sum is ${sum}. Try again!`;
+                messageEl.style.color = '#ff6b6b';
+                
+                // Deselect all balls after a short delay
+                setTimeout(() => {
+                    selectedBalls.forEach(ball => {
+                        ball.element.classList.remove('selected');
+                    });
+                    selectedBalls = [];
+                }, 1000);
+            }
+        }
+        
+        // Celebration animation
+        function celebrate() {
+            celebrationEl.style.display = 'block';
+            celebrationEl.innerHTML = '';
+            
+            // Create confetti
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                
+                // Animation
+                const animation = confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)'
+                });
+                
+                celebrationEl.appendChild(confetti);
+            }
+            
+            // Hide celebration after animation
+            setTimeout(() => {
+                celebrationEl.style.display = 'none';
+            }, 3000);
+        }
+        
+        // New game button
+        newGameBtn.addEventListener('click', initGame);
+        
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>

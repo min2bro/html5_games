@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vertical Color Puzzle</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: row;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .clue-box {
+      max-width: 300px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .instruction {
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .clue {
+      background: #e3f2fd;
+      border-left: 4px solid #3498db;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+
+    .drag-box, .drop-box {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 1.5rem;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .red { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
+    .green { background: linear-gradient(135deg, #00b09b, #96c93d); }
+    .blue { background: linear-gradient(135deg, #2193b0, #6dd5ed); }
+
+    .drop-zone {
+      width: 80px;
+      height: 80px;
+      border: 3px dashed #3498db;
+      border-radius: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .drop-zone.filled {
+      border: 3px solid #2ecc71;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .check { background: #27ae60; color: white; }
+    .reset { background: #e74c3c; color: white; }
+
+    .feedback {
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="clue-box">
+      <h1>Color Puzzle</h1>
+      <div class="instruction">Drag and drop the colored circles into the boxes to solve the puzzle.</div>
+      <div class="clue">The blue circle is not at the top.</div>
+      <div class="clue">The green circle is below the red circle.</div>
+      <div class="clue">The blue circle is adjacent to the green circle.</div>
+      <div class="controls">
+        <button class="check" onclick="checkSolution()">Check</button>
+        <button class="reset" onclick="resetPuzzle()">Reset</button>
+      </div>
+      <div class="feedback" id="feedback">Place the circles!</div>
+    </div>
+    <div class="drag-box">
+      <div class="circle green" draggable="true" data-color="green">G</div>
+      <div class="circle blue" draggable="true" data-color="blue">B</div>
+      <div class="circle red" draggable="true" data-color="red">R</div>
+    </div>
+    <div class="drop-box">
+      <div class="drop-zone" data-position="top"></div>
+      <div class="drop-zone" data-position="middle"></div>
+      <div class="drop-zone" data-position="bottom"></div>
+    </div>
+  </div>
+  <script>
+    const circles = document.querySelectorAll('.circle');
+    const zones = document.querySelectorAll('.drop-zone');
+    const feedback = document.getElementById('feedback');
+    let dragged;
+
+    circles.forEach(c => {
+      c.addEventListener('dragstart', e => {
+        dragged = c;
+        e.dataTransfer.setData('text/plain', c.dataset.color);
+      });
+    });
+
+    zones.forEach(z => {
+      z.addEventListener('dragover', e => e.preventDefault());
+      z.addEventListener('drop', e => {
+        e.preventDefault();
+        if (z.firstChild) z.removeChild(z.firstChild);
+        const clone = dragged.cloneNode(true);
+        clone.draggable = false;
+        z.appendChild(clone);
+        z.classList.add('filled');
+        feedback.textContent = 'Keep going...';
+      });
+    });
+
+    function getColorAt(position) {
+      const zone = document.querySelector(`.drop-zone[data-position="${position}"]`);
+      return zone.firstChild ? zone.firstChild.dataset.color : null;
+    }
+
+    function getPositionOf(color) {
+      for (const z of zones) {
+        if (z.firstChild && z.firstChild.dataset.color === color) {
+          return z.dataset.position;
+        }
+      }
+      return null;
+    }
+
+    function areAdjacent(c1, c2) {
+      const order = ['top', 'middle', 'bottom'];
+      const i1 = order.indexOf(getPositionOf(c1));
+      const i2 = order.indexOf(getPositionOf(c2));
+      return Math.abs(i1 - i2) === 1;
+    }
+
+    function checkSolution() {
+      const red = getPositionOf('red');
+      const green = getPositionOf('green');
+      const blue = getPositionOf('blue');
+
+      if (!red || !green || !blue) {
+        feedback.textContent = 'Complete all positions!';
+        feedback.style.color = '#e74c3c';
+        return;
+      }
+
+      const correct = blue !== 'top' &&
+                      (red === 'top' && green !== 'top') || (red === 'middle' && green === 'bottom') &&
+                      areAdjacent('blue', 'green');
+
+      if (correct) {
+        feedback.textContent = 'Correct! Well done!';
+        feedback.style.color = '#27ae60';
+      } else {
+        feedback.textContent = 'Incorrect. Try again!';
+        feedback.style.color = '#e74c3c';
+      }
+    }
+
+    function resetPuzzle() {
+      zones.forEach(z => {
+        if (z.firstChild) z.removeChild(z.firstChild);
+        z.classList.remove('filled');
+      });
+      feedback.textContent = 'Place the circles!';
+      feedback.style.color = 'black';
+    }
+  </script>
+</body>
+</html>
