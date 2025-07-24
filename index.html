@@ -4,6 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Game Collection</title>
+
+  <!-- ✅ Google Analytics Tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBWP5KZB8K"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-SBWP5KZB8K');
+  </script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -64,9 +75,16 @@
     const nextBtn = document.getElementById("nextBtn");
 
     function updateGame() {
-      gameObject.data = games[currentIndex];
+      const currentGame = games[currentIndex];
+      gameObject.data = currentGame;
       prevBtn.disabled = currentIndex === 0;
       nextBtn.disabled = currentIndex === games.length - 1;
+
+      // ✅ Send GA4 event: Game viewed
+      gtag('event', 'game_viewed', {
+        event_category: 'Game',
+        event_label: currentGame
+      });
     }
 
     prevBtn.addEventListener("click", () => {
@@ -80,10 +98,16 @@
       if (currentIndex < games.length - 1) {
         currentIndex++;
         updateGame();
+
+        // ✅ Send GA4 event: Next button clicked
+        gtag('event', 'next_button_clicked', {
+          event_category: 'Navigation',
+          event_label: games[currentIndex]
+        });
       }
     });
 
-    // Initialize
+    // Initialize on first load
     updateGame();
   </script>
 </body>
