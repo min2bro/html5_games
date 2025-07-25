@@ -271,6 +271,11 @@
             transform: translateY(2px);
         }
         
+        .reset-btn {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+            color: white;
+        }
+        
         .next-btn {
             background: linear-gradient(to right, #2ecc71, #27ae60);
             color: white;
@@ -354,10 +359,7 @@
     <div class="game-container">
         <div class="game-header">
             <div class="header-icons">
-                <button class="icon-btn" id="menuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <button class="icon-btn" id="resetBtn">
+                <button class="icon-btn" id="resetBtn" title="Reset Level">
                     <i class="fas fa-redo"></i>
                 </button>
             </div>
@@ -401,6 +403,9 @@
             </div>
             
             <div class="action-btns">
+                <button class="action-btn reset-btn" id="resetBtnLarge">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
                 <button class="action-btn next-btn" id="nextBtn">
                     <i class="fas fa-arrow-right"></i> Next Level
                 </button>
@@ -421,6 +426,7 @@
             const leftBtn = document.getElementById('leftBtn');
             const rightBtn = document.getElementById('rightBtn');
             const resetBtn = document.getElementById('resetBtn');
+            const resetBtnLarge = document.getElementById('resetBtnLarge');
             const nextBtn = document.getElementById('nextBtn');
             const message = document.getElementById('message');
             const levelIndicator = document.querySelector('.level-indicator');
@@ -478,7 +484,8 @@
                     startValue: 1,
                     targetValue: 70,
                     maxMoves: 10
-                }
+                },
+                
             ];
             
             // Initialize the game
@@ -519,7 +526,7 @@
                             cell.textContent = currentValue;
                         } else if (row === goalPosition.row && col === goalPosition.col) {
                             cell.className += ' goal';
-                            cell.textContent = 'G';
+                            cell.textContent = 'T';
                         } else if (cellContent === 'S' || cellContent === '') {
                             cell.className += ' empty';
                         } else {
@@ -585,8 +592,6 @@
                 }
                 
                 // Check move limit
-                // alert(moves)
-                // alert(levels[currentLevel - 1].maxMoves)
                 if (moves > levels[currentLevel - 1].maxMoves) {
                     showMessage('Out of Moves!', 'fail');
                     gameActive = false;
@@ -633,6 +638,7 @@
             rightBtn.addEventListener('click', () => moveBlock('right'));
             
             resetBtn.addEventListener('click', () => initGame());
+            resetBtnLarge.addEventListener('click', () => initGame());
             
             nextBtn.addEventListener('click', () => {
                 currentLevel++;
