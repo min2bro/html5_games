@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compact Math Maze Slider</title>
+    <title>Math Maze Slider</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -81,6 +81,24 @@
             border-radius: 15px;
             font-size: 0.85rem;
             font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .level-indicator.next-level {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .level-indicator.next-level:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+        
+        .level-indicator.next-level i {
+            font-size: 0.9rem;
         }
         
         /* Instructions */
@@ -204,7 +222,7 @@
             grid-template-rows: repeat(2, 1fr);
             gap: 8px;
             max-width: 200px;
-            margin: 0 auto 15px;
+            margin: 0 auto;
         }
         
         .arrow-btn {
@@ -245,41 +263,6 @@
         .arrow-btn.right {
             grid-column: 3;
             grid-row: 2;
-        }
-        
-        .action-btns {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .action-btn {
-            padding: 10px 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .action-btn:active {
-            transform: translateY(2px);
-        }
-        
-        .reset-btn {
-            background: linear-gradient(to right, #e74c3c, #c0392b);
-            color: white;
-        }
-        
-        .next-btn {
-            background: linear-gradient(to right, #2ecc71, #27ae60);
-            color: white;
-            display: none;
         }
         
         /* Messages */
@@ -366,7 +349,7 @@
             
             <div class="game-title">Math Maze Slider</div>
             
-            <div class="level-indicator">Lvl 1</div>
+            <div class="level-indicator" id="levelIndicator">Lvl 1</div>
         </div>
         
         <div class="instructions">
@@ -401,15 +384,6 @@
                 <button class="arrow-btn right" id="rightBtn">→</button>
                 <button class="arrow-btn down" id="downBtn">↓</button>
             </div>
-            
-            <div class="action-btns">
-                <button class="action-btn reset-btn" id="resetBtnLarge">
-                    <i class="fas fa-redo"></i> Reset
-                </button>
-                <button class="action-btn next-btn" id="nextBtn">
-                    <i class="fas fa-arrow-right"></i> Next Level
-                </button>
-            </div>
         </div>
         
         <div class="message" id="message"></div>
@@ -426,10 +400,8 @@
             const leftBtn = document.getElementById('leftBtn');
             const rightBtn = document.getElementById('rightBtn');
             const resetBtn = document.getElementById('resetBtn');
-            const resetBtnLarge = document.getElementById('resetBtnLarge');
-            const nextBtn = document.getElementById('nextBtn');
             const message = document.getElementById('message');
-            const levelIndicator = document.querySelector('.level-indicator');
+            const levelIndicator = document.getElementById('levelIndicator');
             
             // Game state
             let currentLevel = 1;
@@ -484,8 +456,7 @@
                     startValue: 1,
                     targetValue: 70,
                     maxMoves: 10
-                },
-                
+                }
             ];
             
             // Initialize the game
@@ -499,11 +470,14 @@
                 moves = 0;
                 gameActive = true;
                 
+                // Update level indicator
                 levelIndicator.textContent = `Lvl ${currentLevel}`;
+                levelIndicator.className = 'level-indicator';
+                levelIndicator.onclick = null;
+                
                 currentValueDisplay.textContent = currentValue;
                 targetValueDisplay.textContent = targetValue;
                 movesDisplay.textContent = moves;
-                nextBtn.style.display = 'none';
                 message.style.display = 'none';
                 
                 renderGrid();
@@ -582,9 +556,7 @@
                 if (newRow === goalPosition.row && newCol === goalPosition.col) {
                     if (currentValue === targetValue) {
                         showMessage('Level Complete!', 'success');
-                        if (currentLevel < levels.length) {
-                            nextBtn.style.display = 'flex';
-                        }
+                        activateNextLevelButton();
                         gameActive = false;
                     } else {
                         showMessage('Wrong Value!', 'fail');
@@ -598,6 +570,21 @@
                 }
                 
                 renderGrid();
+            }
+            
+            // Activate next level button
+            function activateNextLevelButton() {
+                if (currentLevel < levels.length) {
+                    levelIndicator.className = 'level-indicator next-level';
+                    levelIndicator.innerHTML = `<i class="fas fa-arrow-right"></i> Next`;
+                    levelIndicator.onclick = goToNextLevel;
+                }
+            }
+            
+            // Go to next level
+            function goToNextLevel() {
+                currentLevel++;
+                initGame();
             }
             
             // Apply math operation
@@ -638,12 +625,6 @@
             rightBtn.addEventListener('click', () => moveBlock('right'));
             
             resetBtn.addEventListener('click', () => initGame());
-            resetBtnLarge.addEventListener('click', () => initGame());
-            
-            nextBtn.addEventListener('click', () => {
-                currentLevel++;
-                initGame();
-            });
             
             // Keyboard controls
             document.addEventListener('keydown', (e) => {
