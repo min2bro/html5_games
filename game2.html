@@ -125,14 +125,14 @@
         .prime {
             background: radial-gradient(circle, #3498db, #2980b9);
             color: #fff;
-            font-size: 1.8rem;
+            /*font-size: 1.8rem;*/
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
         }
         
         .non-prime {
             background: radial-gradient(circle, #3498db, #2980b9);
             color: #fff;
-            font-size: 1.5rem;
+            /*font-size: 1.5rem;*/
         }
         
         .instructions {
@@ -368,10 +368,15 @@
                 ball.classList.add('ball');
                 
                 // Use relative sizes for better mobile experience
-                const baseSize = Math.min(window.innerWidth, window.innerHeight) / 10;
-                const size = Math.floor(Math.random() * (baseSize * 0.7)) + (baseSize * 0.8);
+                // Random size between 80 and 100px
+                const size = Math.floor(Math.random() * 20) + 80;
                 ball.style.width = `${size}px`;
                 ball.style.height = `${size}px`;
+
+                // Dynamically scale font size to fit ball size
+                const fontSize = size * 0.4;
+                ball.style.fontSize = `${fontSize}px`;
+
                 
                 // Position with collision detection
                 let validPosition = false;
