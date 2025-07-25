@@ -2,36 +2,72 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Word Ladder Game</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
+      margin: 0;
+      padding: 0;
       background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
     }
+
+    .game-container {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      max-width: 1100px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
     .ladder {
       background: white;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      max-width: 600px;
-      width: 100%;
+      flex: 1;
+      min-width: 300px;
     }
+
+    .instruction-box {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .start-target {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
     .word-row {
       margin-bottom: 20px;
     }
+
     .word-label {
       font-weight: bold;
       margin-bottom: 8px;
     }
+
     .letter-boxes {
       display: flex;
       gap: 8px;
     }
+
     .letter-boxes input {
       width: 40px;
       height: 40px;
@@ -41,61 +77,114 @@
       border: 2px solid #ccc;
       border-radius: 6px;
       transition: border-color 0.2s;
+      outline: none;
     }
+
     .letter-boxes input.correct {
       border-color: green;
     }
+
     .letter-boxes input.incorrect {
-      border-color: red;
+      border-color: red !important;
     }
-    .start-target {
-      font-size: 1.2rem;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
+
     #celebration {
       display: none;
       margin-top: 20px;
       font-size: 1.4rem;
       color: green;
       animation: pop 1s ease-in-out infinite alternate;
+      text-align: center;
     }
+
     @keyframes pop {
       0% { transform: scale(1); }
       100% { transform: scale(1.1); }
     }
+
     .icon {
       margin-left: 8px;
+    }
+
+    .instruction-box h2 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+
+    .instruction-box ul {
+      padding-left: 20px;
+    }
+
+    .example {
+      background: #e8f0fe;
+      padding: 10px;
+      border-left: 4px solid #4285f4;
+      margin-top: 15px;
+      border-radius: 5px;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 768px) {
+      .game-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .ladder, .instruction-box {
+        width: 100%;
+      }
+
+      .letter-boxes input {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="ladder">
-    <div class="start-target">Start Word: FIRE</div>
+  <div class="game-container">
+    <div class="ladder">
+      <div class="start-target">Word Ladder:</div>
+      <div class="start-target">Start Word: FIRE</div>
 
-    <div class="word-row">
-      <div class="word-label">1. Hint: To employ someone at a job <span class="icon">💼</span></div>
-      <div class="letter-boxes" id="step1"></div>
+      <div class="word-row">
+        <div class="word-label">1. Hint: To employ someone at a job <span class="icon">💼</span></div>
+        <div class="letter-boxes" id="step1"></div>
+      </div>
+
+      <div class="word-row">
+        <div class="word-label">2. Hint: The opposite of "there" — it’s right __ <span class="icon">📍</span></div>
+        <div class="letter-boxes" id="step2"></div>
+      </div>
+
+      <div class="word-row">
+        <div class="word-label">3. Hint: A group of cows <span class="icon">🐄</span></div>
+        <div class="letter-boxes" id="step3"></div>
+      </div>
+
+      <div class="word-row">
+        <div class="word-label">4. Hint: The part of your body that holds your brain <span class="icon">🧠</span></div>
+        <div class="letter-boxes" id="step4"></div>
+      </div>
+
+      <div class="start-target">Target Word: HEAT</div>
+      <div id="celebration">🎉 Puzzle Solved Successfully! 🎉</div>
     </div>
 
-    <div class="word-row">
-      <div class="word-label">2. Hint: The opposite of "there" — it’s right __ <span class="icon">📍</span></div>
-      <div class="letter-boxes" id="step2"></div>
+    <div class="instruction-box">
+      <h2>How to Play</h2>
+      <ul>
+        <li>Start from the given word: <strong>FIRE</strong>.</li>
+        <li>Change one letter at a time to reach the target word: <strong>HEAT</strong>.</li>
+        <li>Each step must form a valid word based on the given hint.</li>
+        <li>You must solve the puzzle in exactly 4 steps.</li>
+        <li>Correct letters will show green borders.</li>
+        <li>Incorrect letters will show red borders.</li>
+      </ul>
+
+      
     </div>
-
-    <div class="word-row">
-      <div class="word-label">3. Hint: A group of cows <span class="icon">🐄</span></div>
-      <div class="letter-boxes" id="step3"></div>
-    </div>
-
-    <div class="word-row">
-      <div class="word-label">4. Hint: The part of your body that holds your brain <span class="icon">🧠</span></div>
-      <div class="letter-boxes" id="step4"></div>
-    </div>
-
-    <div class="start-target">Target Word: HEAT</div>
-
-    <div id="celebration">🎉 Puzzle Solved Successfully! 🎉</div>
   </div>
 
   <script>

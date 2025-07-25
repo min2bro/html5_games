@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vertical Color Puzzle</title>
   <style>
     body {
@@ -23,8 +23,11 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       display: flex;
       flex-direction: row;
+      flex-wrap: wrap;
       gap: 40px;
       align-items: center;
+      max-width: 800px;
+      width: 100%;
     }
 
     .clue-box {
@@ -70,6 +73,10 @@
       user-select: none;
     }
 
+    .selected {
+      outline: 4px solid yellow;
+    }
+
     .red { background: linear-gradient(135deg, #ff416c, #ff4b2b); }
     .green { background: linear-gradient(135deg, #00b09b, #96c93d); }
     .blue { background: linear-gradient(135deg, #2193b0, #6dd5ed); }
@@ -93,6 +100,7 @@
       display: flex;
       justify-content: center;
       gap: 20px;
+      flex-wrap: wrap;
     }
 
     button {
@@ -111,26 +119,51 @@
       text-align: center;
       font-weight: bold;
     }
+
+    @media (max-width: 600px) {
+      .container {
+        flex-direction: column;
+        padding: 15px;
+        gap: 25px;
+      }
+
+      .drag-box, .drop-box {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .circle, .drop-zone {
+        width: 60px;
+        height: 60px;
+        font-size: 1.2rem;
+      }
+
+      button {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="clue-box">
       <h1>Color Puzzle</h1>
-      <div class="instruction">Drag and drop the colored circles into the boxes to solve the puzzle.</div>
-      <div class="clue">The blue circle is not at the top.</div>
-      <div class="clue">The green circle is below the red circle.</div>
-      <div class="clue">The blue circle is adjacent to the green circle.</div>
+      <div class="instruction">Drag (or tap) and drop the colored circles into the boxes to solve the puzzle.</div>
+      <div class="clue">🟦 Blue is not at the top.</div>
+      <div class="clue">🟩 Green is below Red.</div>
+      <div class="clue">🟦 Blue is adjacent to Green.</div>
       <div class="controls">
         <button class="check" onclick="checkSolution()">Check</button>
         <button class="reset" onclick="resetPuzzle()">Reset</button>
       </div>
       <div class="feedback" id="feedback">Place the circles!</div>
     </div>
-    <div class="drag-box">
-      <div class="circle green" draggable="true" data-color="green">G</div>
-      <div class="circle blue" draggable="true" data-color="blue">B</div>
-      <div class="circle red" draggable="true" data-color="red">R</div>
+    <div class="drag-box" id="drag-box">
+      <div class="circle green" draggable="true" data-color="green" data-mobile="true">G</div>
+      <div class="circle blue" draggable="true" data-color="blue" data-mobile="true">B</div>
+      <div class="circle red" draggable="true" data-color="red" data-mobile="true">R</div>
     </div>
     <div class="drop-box">
       <div class="drop-zone" data-position="top"></div>
@@ -138,28 +171,59 @@
       <div class="drop-zone" data-position="bottom"></div>
     </div>
   </div>
+
   <script>
     const circles = document.querySelectorAll('.circle');
     const zones = document.querySelectorAll('.drop-zone');
     const feedback = document.getElementById('feedback');
-    let dragged;
+    const dragBox = document.getElementById('drag-box');
+    let dragged = null;
+    let selected = null;
 
+    // Desktop drag
     circles.forEach(c => {
       c.addEventListener('dragstart', e => {
         dragged = c;
         e.dataTransfer.setData('text/plain', c.dataset.color);
       });
+
+      // Mobile tap select
+      c.addEventListener('touchstart', e => {
+        e.preventDefault();
+        if (selected) {
+          selected.classList.remove('selected');
+          if (selected === c) {
+            selected = null;
+            return;
+          }
+        }
+        selected = c;
+        selected.classList.add('selected');
+      });
     });
 
     zones.forEach(z => {
+      // Desktop drop
       z.addEventListener('dragover', e => e.preventDefault());
       z.addEventListener('drop', e => {
         e.preventDefault();
+        if (!dragged) return;
         if (z.firstChild) z.removeChild(z.firstChild);
-        const clone = dragged.cloneNode(true);
-        clone.draggable = false;
-        z.appendChild(clone);
+        z.appendChild(dragged);
         z.classList.add('filled');
+        feedback.textContent = 'Keep going...';
+      });
+
+      // Mobile tap place
+      z.addEventListener('touchstart', e => {
+        e.preventDefault();
+        if (!selected) return;
+        if (selected.parentElement) selected.parentElement.removeChild(selected);
+        if (z.firstChild) z.removeChild(z.firstChild);
+        z.appendChild(selected);
+        z.classList.add('filled');
+        selected.classList.remove('selected');
+        selected = null;
         feedback.textContent = 'Keep going...';
       });
     });
@@ -197,7 +261,7 @@
       }
 
       const correct = blue !== 'top' &&
-                      (red === 'top' && green !== 'top') || (red === 'middle' && green === 'bottom') &&
+                      ((red === 'top' && green !== 'top') || (red === 'middle' && green === 'bottom')) &&
                       areAdjacent('blue', 'green');
 
       if (correct) {
@@ -211,11 +275,15 @@
 
     function resetPuzzle() {
       zones.forEach(z => {
-        if (z.firstChild) z.removeChild(z.firstChild);
+        if (z.firstChild) dragBox.appendChild(z.firstChild);
         z.classList.remove('filled');
       });
       feedback.textContent = 'Place the circles!';
       feedback.style.color = 'black';
+      if (selected) {
+        selected.classList.remove('selected');
+        selected = null;
+      }
     }
   </script>
 </body>
