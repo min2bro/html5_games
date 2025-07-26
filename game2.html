@@ -295,9 +295,9 @@
     <div class="game-container">
         <header>
             <div class="icon-controls">
-                <button class="icon-btn" id="startBtn" title="Start Game">
+                <!-- <button class="icon-btn" id="startBtn" title="Start Game">
                     <i class="fas fa-play"></i>
-                </button>
+                </button> -->
                 <button class="icon-btn" id="resetBtn" title="Reset Game">
                     <i class="fas fa-redo"></i>
                 </button>
@@ -335,7 +335,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const gameBoard = document.getElementById('gameBoard');
-            const startBtn = document.getElementById('startBtn');
+            // const startBtn = document.getElementById('startBtn');
             const resetBtn = document.getElementById('resetBtn');
             const playAgainBtn = document.getElementById('playAgainBtn');
             const gameOverScreen = document.getElementById('gameOver');
@@ -590,6 +590,7 @@
                 // Start ball movement
                 moveBalls();
             }
+
             
             // End the game
             function endGame() {
@@ -612,12 +613,14 @@
             }
             
             // Event listeners
-            startBtn.addEventListener('click', startGame);
+            // startBtn.addEventListener('click', startGame);
             resetBtn.addEventListener('click', resetGame);
             playAgainBtn.addEventListener('click', startGame);
             
             // Initialize the game board
             resetGame();
+            //start game
+            startGame();
         });
     </script>
 </body>

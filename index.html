@@ -66,6 +66,44 @@
     <button id="nextBtn">Next →</button>
   </div>
 
+  <!-- Feedback Modal -->
+  <div id="feedbackModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
+    <div style="background:white; padding:20px; border-radius:10px; width:90%; max-width:400px; text-align:left; position:relative;">
+      <button id="closeModal" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+      <h3>We’d love your feedback!</h3>
+      <form id="feedbackForm">
+        <label>Name (optional)</label>
+        <input type="text" name="name" style="width:100%; margin-bottom:10px; padding:5px;"/>
+
+        <label>Email (optional)</label>
+        <input type="email" name="email" style="width:100%; margin-bottom:10px; padding:5px;"/>
+
+        <label>Rating (1–5)</label>
+        <select name="rating" required style="width:100%; margin-bottom:10px; padding:5px;">
+          <option value="5">5 - Loved it!</option>
+          <option value="4">4</option>
+          <option value="3">3</option>
+          <option value="2">2</option>
+          <option value="1">1 - Not great</option>
+        </select>
+
+        <label>Feedback</label>
+        <textarea name="feedback" required style="width:100%; margin-bottom:10px; padding:5px;"></textarea>
+
+        <label>Would you recommend us?</label>
+        <select name="recommend" required style="width:100%; margin-bottom:15px; padding:5px;">
+          <option value="definitely">Definitely</option>
+          <option value="probably">Probably</option>
+          <option value="not-sure">Not sure</option>
+          <option value="probably-not">Probably not</option>
+        </select>
+
+        <button type="submit" style="background:#27ae60; color:white; padding:10px 15px; border:none; cursor:pointer;">Submit</button>
+      </form>
+      <div id="thanksMessage" style="display:none; text-align:center; color:green; margin-top:15px;">Thanks for your feedback!</div>
+    </div>
+  </div>
+
   <script>
     const games = ["game1.html", "game2.html", "game3.html", "game4.html", "game5.html", "game6.html", "game7.html", "game8.html", "game10.html"];
     let currentIndex = 0;
@@ -104,11 +142,57 @@
           event_category: 'Navigation',
           event_label: games[currentIndex]
         });
+
+        // If just loaded last game
+        if (currentIndex === games.length - 1) {
+          setTimeout(() => {
+            const wantsFeedback = confirm("Do you want to let us know if you are enjoying this game?");
+            if (wantsFeedback) {
+              document.getElementById("feedbackModal").style.display = "flex";
+            }
+          }, 300);
+        }
       }
     });
 
     // Initialize on first load
     updateGame();
+
+    // Feedback modal logic
+    const feedbackModal = document.getElementById("feedbackModal");
+    const closeModal = document.getElementById("closeModal");
+    const feedbackForm = document.getElementById("feedbackForm");
+    const thanksMessage = document.getElementById("thanksMessage");
+
+    closeModal.addEventListener("click", () => {
+      feedbackModal.style.display = "none";
+    });
+
+    feedbackForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const formData = new FormData(feedbackForm);
+      const payload = {
+        name: formData.get('name') || 'Anonymous',
+        email: formData.get('email') || 'Not provided',
+        rating: formData.get('rating'),
+        feedback: formData.get('feedback'),
+        recommend: formData.get('recommend'),
+        timestamp: new Date().toISOString()
+      };
+
+      fetch('https://script.google.com/macros/s/AKfycbzXWgDiD3tplQL6ZZp8l9HQMsC7EFIRF7UdRZPhMBptNhY4N7bUnHFcOBmRhrIAS3am/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }).then(() => {
+        feedbackForm.reset();
+        feedbackForm.style.display = "none";
+        thanksMessage.style.display = "block";
+      });
+    });
   </script>
 </body>
 </html>
