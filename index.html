@@ -105,7 +105,7 @@
   </div>
 
   <script>
-    const games = ["game1.html", "game2.html", "game3.html", "game4.html", "game5.html", "game6.html", "game7.html", "game8.html", "game10.html"];
+    const games = ["game1.html", "game2.html", "game10.html", "game4.html", "game5.html", "game6.html", "game7.html", "game8.html", "game3.html"];
     let currentIndex = 0;
 
     const gameObject = document.getElementById("gameObject");
@@ -144,7 +144,7 @@
         });
 
         // If just loaded last game
-        if (currentIndex === games.length - 1) {
+        if (currentIndex === 2 || currentIndex === games.length - 1) {
           setTimeout(() => {
             const wantsFeedback = confirm("Do you want to let us know if you are enjoying this game?");
             if (wantsFeedback) {
