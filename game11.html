@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Alien Word Invasion</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -12,7 +13,7 @@
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
+
     body {
       background: #0a0a1d;
       color: white;
@@ -22,7 +23,7 @@
       overflow: hidden;
       position: relative;
     }
-    
+
     body::before {
       content: '';
       position: absolute;
@@ -30,13 +31,13 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: 
+      background:
         radial-gradient(circle at 10% 20%, rgba(15, 100, 200, 0.1) 0%, transparent 20%),
         radial-gradient(circle at 90% 80%, rgba(200, 15, 100, 0.1) 0%, transparent 20%),
         radial-gradient(circle at 50% 50%, rgba(100, 200, 15, 0.1) 0%, transparent 30%);
       z-index: -1;
     }
-    
+
     .header {
       text-align: center;
       padding: 15px;
@@ -45,7 +46,7 @@
       z-index: 10;
       position: relative;
     }
-    
+
     .title {
       font-size: 2.2rem;
       background: linear-gradient(to right, #4deeea, #74ee15);
@@ -54,107 +55,25 @@
       text-shadow: 0 0 10px rgba(77, 238, 234, 0.3);
       margin-bottom: 5px;
     }
-    
+
     .instructions {
       font-size: 1rem;
       color: #74ee15;
       max-width: 500px;
       margin: 0 auto;
     }
-    
-    .stats-container {
-      display: flex;
-      justify-content: space-between;
-      padding: 15px;
-      background: rgba(20, 20, 50, 0.8);
-      border-bottom: 2px solid #4deeea;
-      max-width: 600px;
-      margin: 0 auto;
-      width: 100%;
-    }
-    
-    .stat-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px 20px;
-      background: rgba(10, 10, 35, 0.9);
-      border-radius: 10px;
-      min-width: 120px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    }
-    
-    .stat-label {
-      font-size: 1rem;
-      color: #74ee15;
-      margin-bottom: 5px;
-    }
-    
-    .stat-value {
-      font-size: 2rem;
-      font-weight: bold;
-      color: white;
-    }
-    
-    .game-container {
-      flex: 1;
-      position: relative;
-      max-width: 600px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 15px;
-      overflow: hidden;
-    }
-    
-    #game {
-      position: relative;
-      width: 100%;
-      height: 55vh;
-      min-height: 300px;
-      border: 3px solid #4deeea;
-      border-radius: 10px;
-      background: rgba(10, 10, 35, 0.7);
-      overflow: hidden;
-      box-shadow: 0 0 20px rgba(77, 238, 234, 0.3);
-    }
-    
-    .alien {
-      position: absolute;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      animation: fall linear;
-      z-index: 5;
-    }
-    
-    .emoji {
-      font-size: 2.5rem;
-      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
-    }
-    
-    .word {
-      margin-top: 5px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: white;
-      background: rgba(0, 0, 0, 0.6);
-      padding: 3px 10px;
-      border-radius: 20px;
-      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-    }
-    
-    @keyframes fall {
-      from { top: -100px; }
-      to { top: 100%; }
-    }
-    
+
     .input-container {
       padding: 15px;
       max-width: 600px;
       width: 100%;
       margin: 0 auto;
+      background: rgba(20, 20, 50, 0.9);
+      border-bottom: 2px solid #4deeea;
+      position: relative;
+      z-index: 5;
     }
-    
+
     #wordInput {
       width: 100%;
       font-size: 1.4rem;
@@ -167,147 +86,162 @@
       outline: none;
       transition: all 0.3s;
     }
-    
+
     #wordInput:focus {
       box-shadow: 0 0 20px rgba(116, 238, 21, 0.7);
       background: rgba(30, 30, 70, 0.9);
     }
-    
+
     #wordInput::placeholder {
       color: #aaa;
     }
-    
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 15px;
+
+    .game-container {
+      flex: 1;
+      position: relative;
       max-width: 600px;
-      margin: 0 auto;
       width: 100%;
-    }
-    
-    .btn {
-      padding: 12px 25px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
+      margin: 0 auto;
+      padding: 15px;
+      overflow: hidden;
       display: flex;
+      flex-direction: column;
+    }
+
+    #game {
+      position: relative;
+      width: 100%;
+      height: 70vh;
+      min-height: 400px;
+      border: 3px solid #4deeea;
+      border-radius: 10px;
+      background: rgba(10, 10, 35, 0.7);
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(77, 238, 234, 0.3);
+      flex: 1;
+    }
+
+    .alien {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s;
+      animation: fall linear;
+      z-index: 5;
     }
-    
-    .btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+    .emoji {
+      font-size: 2.5rem;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
     }
-    
-    .pause-btn {
-      background: linear-gradient(to right, #4deeea, #2a9df4);
-      color: #0a0a1d;
+
+    .word {
+      margin-top: 5px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
     }
-    
-    .restart-btn {
-      background: linear-gradient(to right, #74ee15, #4dee4d);
-      color: #0a0a1d;
+
+    @keyframes fall {
+      from {
+        top: -100px;
+      }
+
+      to {
+        top: 100%;
+      }
     }
-    
+
     /* Mobile-specific adjustments */
     @media (max-width: 768px) {
       .title {
         font-size: 1.8rem;
       }
-      
+
       .instructions {
         font-size: 0.9rem;
       }
-      
-      .stat-box {
-        padding: 8px 15px;
-        min-width: 100px;
-      }
-      
-      .stat-label {
-        font-size: 0.9rem;
-      }
-      
-      .stat-value {
-        font-size: 1.6rem;
-      }
-      
+
       #game {
-        height: 50vh;
-        min-height: 250px;
+        height: 65vh;
+        min-height: 350px;
       }
-      
+
       .emoji {
         font-size: 2rem;
       }
-      
+
       .word {
         font-size: 1rem;
       }
-      
+
       #wordInput {
         font-size: 1.2rem;
         padding: 12px;
       }
-      
-      .btn {
-        padding: 10px 20px;
-        font-size: 1rem;
-      }
     }
-    
+
     @media (max-width: 480px) {
       .title {
         font-size: 1.6rem;
       }
-      
+
       .instructions {
         font-size: 0.85rem;
       }
-      
-      .stats-container {
-        padding: 10px;
-      }
-      
-      .stat-box {
-        padding: 6px 12px;
-        min-width: 90px;
-      }
-      
-      .stat-label {
-        font-size: 0.8rem;
-      }
-      
-      .stat-value {
-        font-size: 1.4rem;
-      }
-      
+
       .game-container {
         padding: 10px;
       }
-      
+
       #game {
-        height: 45vh;
-        min-height: 200px;
+        height: 60vh;
+        min-height: 300px;
       }
-      
+
       .input-container {
         padding: 10px;
       }
-      
-      .controls {
+    }
+
+    /* Landscape mode optimizations */
+    @media (max-width: 768px) and (orientation: landscape) {
+      .header {
+        padding: 8px;
+      }
+
+      .title {
+        font-size: 1.4rem;
+        margin-bottom: 2px;
+      }
+
+      .instructions {
+        font-size: 0.8rem;
+      }
+
+      .input-container {
+        padding: 8px;
+      }
+
+      #wordInput {
+        font-size: 1.1rem;
         padding: 10px;
-        gap: 15px;
+      }
+
+      .game-container {
+        padding: 8px;
+      }
+
+      #game {
+        height: 75vh;
+        min-height: 250px;
       }
     }
-    
+
     /* Particles for background effect */
     .particle {
       position: absolute;
@@ -316,44 +250,37 @@
       pointer-events: none;
       z-index: -1;
     }
+
+    /* Keyboard-aware adjustments */
+    .keyboard-active {
+      --game-height: 50vh;
+    }
+
+    .keyboard-active #game {
+      height: var(--game-height);
+      min-height: 200px;
+    }
+
+    /* Touch-friendly improvements */
+    #wordInput {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
   </style>
 </head>
+
 <body>
   <div class="header">
     <h1 class="title">Alien Word Invasion</h1>
     <p class="instructions">Type the correct spelling to destroy the robot invaders!</p>
   </div>
-  
-  <div class="stats-container">
-    <div class="stat-box">
-      <div class="stat-label">Score</div>
-      <div class="stat-value" id="score">0</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-label">Lives</div>
-      <div class="stat-value" id="lives">3</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-label">Level</div>
-      <div class="stat-value" id="level">1</div>
-    </div>
-  </div>
-  
-  <div class="game-container">
-    <div id="game"></div>
-  </div>
-  
+
   <div class="input-container">
     <input type="text" id="wordInput" placeholder="Type the correct spelling..." autocomplete="off" />
   </div>
-  
-  <div class="controls">
-    <button class="btn pause-btn" id="pauseBtn">
-      <i class="fas fa-pause"></i> Pause
-    </button>
-    <button class="btn restart-btn" id="restartBtn">
-      <i class="fas fa-redo"></i> Restart
-    </button>
+
+  <div class="game-container">
+    <div id="game"></div>
   </div>
 
   <script>
@@ -386,15 +313,55 @@
     let level = 1;
     let gameActive = true;
     let gameInterval;
-    let alienSpeed = 4; // Base speed in seconds
+    let alienSpeed = 8; // Slower base speed in seconds
+    let initialViewportHeight = window.innerHeight;
+    let currentViewportHeight = window.innerHeight;
+    let clearInputTimeout;
 
     const game = document.getElementById('game');
     const wordInput = document.getElementById('wordInput');
-    const scoreEl = document.getElementById('score');
-    const livesEl = document.getElementById('lives');
-    const levelEl = document.getElementById('level');
-    const pauseBtn = document.getElementById('pauseBtn');
-    const restartBtn = document.getElementById('restartBtn');
+    const body = document.body;
+
+    // Viewport height detection for keyboard presence
+    function handleViewportChange() {
+      currentViewportHeight = window.innerHeight;
+      const heightDifference = initialViewportHeight - currentViewportHeight;
+
+      // If viewport height decreased significantly, keyboard is likely active
+      if (heightDifference > 150) {
+        body.classList.add('keyboard-active');
+        // Adjust game height dynamically
+        const gameContainer = document.querySelector('.game-container');
+        const availableHeight = currentViewportHeight - 200; // Account for header and input
+        const newGameHeight = Math.max(200, availableHeight * 0.7);
+        game.style.height = `${newGameHeight}px`;
+      } else {
+        body.classList.remove('keyboard-active');
+        // Reset to default height
+        game.style.height = '';
+      }
+    }
+
+    // Debounced viewport change handler
+    let viewportTimeout;
+    function debouncedViewportChange() {
+      clearTimeout(viewportTimeout);
+      viewportTimeout = setTimeout(handleViewportChange, 100);
+    }
+
+    // Initialize viewport height
+    function initializeViewport() {
+      initialViewportHeight = window.innerHeight;
+      currentViewportHeight = window.innerHeight;
+    }
+
+    // Auto-clear input after 2 seconds of inactivity
+    function resetInputTimeout() {
+      clearTimeout(clearInputTimeout);
+      clearInputTimeout = setTimeout(() => {
+        wordInput.value = '';
+      }, 2000);
+    }
 
     // Create background particles
     function createParticles() {
@@ -402,17 +369,17 @@
       for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
-        
+
         const size = Math.random() * 5 + 2;
         particle.style.width = `${size}px`;
         particle.style.height = `${size}px`;
-        
+
         particle.style.left = `${Math.random() * 100}%`;
         particle.style.top = `${Math.random() * 100}%`;
-        
+
         particle.style.animation = `float ${Math.random() * 20 + 10}s infinite linear`;
         particle.style.opacity = Math.random() * 0.5 + 0.1;
-        
+
         document.body.appendChild(particle);
       }
     }
@@ -429,11 +396,11 @@
       const alien = document.createElement('div');
       alien.classList.add('alien');
       alien.style.left = `${Math.random() * 85}%`;
-      
-      // Adjust speed based on level
-      const speed = Math.max(1, alienSpeed - (level * 0.2));
+
+      // Slower speed with level progression
+      const speed = Math.max(4, alienSpeed - (level * 0.3));
       alien.style.animationDuration = `${speed}s`;
-      
+
       alien.dataset.word = wrong;
       alien.dataset.correct = correct;
 
@@ -461,16 +428,15 @@
 
     function loseLife() {
       if (!gameActive) return;
-      
+
       lives--;
-      livesEl.textContent = lives;
-      
+
       // Visual feedback for losing a life
       document.body.style.backgroundColor = "#ff000033";
       setTimeout(() => {
         document.body.style.backgroundColor = "";
       }, 300);
-      
+
       if (lives <= 0) {
         endGame();
       }
@@ -479,7 +445,7 @@
     function endGame() {
       gameActive = false;
       clearInterval(gameInterval);
-      
+
       // Show game over message
       const gameOver = document.createElement('div');
       gameOver.style.position = 'absolute';
@@ -509,9 +475,9 @@
           Play Again
         </button>
       `;
-      
+
       document.querySelector('.game-container').appendChild(gameOver);
-      
+
       document.getElementById('playAgainBtn').addEventListener('click', () => {
         location.reload();
       });
@@ -519,7 +485,10 @@
 
     wordInput.addEventListener('input', () => {
       if (!gameActive) return;
-      
+
+      // Reset the auto-clear timer on every keystroke
+      resetInputTimeout();
+
       const typed = wordInput.value.trim().toLowerCase();
       const aliens = document.querySelectorAll('.alien');
       for (let alien of aliens) {
@@ -529,20 +498,19 @@
           alien.style.transform = 'scale(1.5)';
           alien.style.opacity = '0';
           alien.style.transition = 'all 0.3s ease';
-          
+
           setTimeout(() => {
             if (game.contains(alien)) {
               game.removeChild(alien);
             }
           }, 300);
-          
+
           score += 10;
-          
+
           // Level up every 100 points
           if (score > 0 && score % 100 === 0) {
             level++;
-            levelEl.textContent = level;
-            
+
             // Visual feedback for level up
             const levelUp = document.createElement('div');
             levelUp.style.position = 'absolute';
@@ -556,7 +524,7 @@
             levelUp.style.zIndex = '50';
             levelUp.textContent = `Level ${level}!`;
             levelUp.style.animation = 'fadeOut 2s forwards';
-            
+
             game.appendChild(levelUp);
             setTimeout(() => {
               if (game.contains(levelUp)) {
@@ -564,14 +532,14 @@
               }
             }, 2000);
           }
-          
-          scoreEl.textContent = score;
+
           wordInput.value = '';
+          resetInputTimeout();
           break;
         }
       }
     });
-    
+
     // Add CSS for fadeOut animation
     const style = document.createElement('style');
     style.textContent = `
@@ -582,27 +550,32 @@
     `;
     document.head.appendChild(style);
 
-    pauseBtn.addEventListener('click', () => {
-      gameActive = !gameActive;
-      if (gameActive) {
-        pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
-      } else {
-        pauseBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
-      }
-    });
-
-    restartBtn.addEventListener('click', () => {
-      location.reload();
-    });
-
     // Initialize the game
     createParticles();
-    gameInterval = setInterval(spawnAlien, 1500);
-    
+    initializeViewport();
+    gameInterval = setInterval(spawnAlien, 2000); // Slower spawn rate
+
+    // Event listeners for viewport changes
+    window.addEventListener('resize', debouncedViewportChange);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        initializeViewport();
+        debouncedViewportChange();
+      }, 500);
+    });
+
     // Focus the input field on any tap in the game area
     game.addEventListener('click', () => {
       wordInput.focus();
     });
+
+    // Handle input focus to ensure proper viewport detection
+    wordInput.addEventListener('focus', debouncedViewportChange);
+    wordInput.addEventListener('blur', debouncedViewportChange);
+
+    // Start the auto-clear timer
+    resetInputTimeout();
   </script>
 </body>
+
 </html>
