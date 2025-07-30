@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Odd One Out</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: #f8f8f8;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    .game-container {
+      max-width: 480px;
+      width: 100%;
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    
+    .game-header {
+      padding: 20px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+    
+    .game-title {
+      font-size: 28px;
+      font-weight: normal;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+      color: #121212;
+    }
+    
+    .game-subtitle {
+      font-size: 16px;
+      color: #666;
+      font-weight: normal;
+    }
+    
+    .game-stats {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: #f5f5f5;
+      border-bottom: 1px solid #eee;
+      font-size: 16px;
+    }
+    
+    .game-content {
+      padding: 25px 20px 20px;
+    }
+    
+    .puzzle-section {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 20px;
+      min-height: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    .option-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+    
+    .btn-num {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px 10px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      color: #333;
+    }
+    
+    .btn-num:hover {
+      background: #f9f9f9;
+      border-color: #ccc;
+    }
+    
+    .btn-num.wrong {
+      background: #fff0f0;
+      border-color: #e0b3b3;
+      color: #c00;
+    }
+    
+    .btn-num.right {
+      background: #f0fff0;
+      border-color: #b3e0b3;
+      color: #090;
+    }
+    
+    .explanation {
+      min-height: 80px;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: 4px;
+      font-size: 16px;
+      color: #444;
+      margin-top: 15px;
+      border-left: 3px solid #ddd;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #ddd;
+      background: #fff;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn:hover {
+      background: #f5f5f5;
+    }
+    
+    .btn-primary {
+      background: #121212;
+      color: white;
+      border-color: #121212;
+    }
+    
+    .btn-primary:hover {
+      background: #333;
+    }
+    
+    .start-screen {
+      padding: 40px 30px;
+      text-align: center;
+    }
+    
+    .mode-select {
+      display: flex;
+      gap: 10px;
+      margin: 25px 0;
+    }
+    
+    .mode-btn {
+      flex: 1;
+      padding: 15px;
+      border: 1px solid #ddd;
+      background: #fff;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    
+    .mode-btn.selected {
+      background: #f0f0f0;
+      border-color: #999;
+      font-weight: bold;
+    }
+    
+    .game-over {
+      text-align: center;
+      padding: 30px 20px;
+    }
+    
+    .final-score {
+      font-size: 28px;
+      margin: 25px 0;
+      color: #121212;
+    }
+    
+    @media (max-width: 500px) {
+      body {
+        padding: 10px;
+      }
+      
+      .game-container {
+        max-width: 100%;
+      }
+      
+      .option-list {
+        grid-template-columns: 1fr;
+      }
+      
+      .mode-select {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="game-header">
+      <h1 class="game-title">Odd One Out</h1>
+      <p class="game-subtitle">Spot the number that doesn't belong</p>
+    </div>
+    
+    <div class="game-stats">
+      <div class="timer">Time: <span id="timer-el">60</span>s</div>
+      <div class="score">Score: <span id="score-el">0</span></div>
+    </div>
+    
+    <div class="game-content" id="game-content">
+      <div class="start-screen" id="start-panel">
+        <p style="margin-bottom: 25px; font-size: 18px; color: #444;">
+          Identify the number that doesn't fit the pattern. Solve as many as you can before time runs out!
+        </p>
+        
+        <div class="mode-select">
+          <button class="mode-btn selected" onclick="setDuration(60)" id="b60">60 seconds</button>
+          <button class="mode-btn" onclick="setDuration(30)" id="b30">30 seconds</button>
+        </div>
+        
+        <button class="btn btn-primary" onclick="startGame()">Start Game</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Reviewed and enhanced puzzles
+    const puzzles = [
+      {opts: [2, 9, 5, 3], ans: 9, expl: "9 is not prime (others are prime numbers)"},
+      {opts: [7, 11, 15, 13], ans: 15, expl: "15 is not prime (others are prime numbers)"},
+      {opts: [8, 27, 64, 32], ans: 32, expl: "32 is not a perfect cube (others are 2³, 3³, 4³)"},
+      {opts: [4, 8, 10, 16], ans: 10, expl: "10 is not a power of 2 (others are 2², 2³, 2⁴)"},
+      {opts: [21, 28, 35, 36], ans: 36, expl: "36 is not divisible by 7 (others are multiples of 7)"},
+      {opts: [1, 0, 2, 4], ans: 0, expl: "0 is not a positive integer (others are positive)"},
+      {opts: [13, 31, 46, 17], ans: 46, expl: "46 is even (others are odd)"},
+      {opts: [3, 5, 7, 9], ans: 9, expl: "9 is composite (others are prime numbers)"},
+      {opts: [49, 64, 25, 81], ans: 64, expl: "64 is an even square (others are odd squares)"},
+      {opts: [5, 15, 20, 30], ans: 5, expl: "5 is prime (others are composite numbers)"},
+      {opts: [3, 5, 9, 15], ans: 5, expl: "5 is not divisible by 3 (others are multiples of 3)"},
+      {opts: [81, 27, 243, 64], ans: 64, expl: "64 is not a power of 3 (others are 3³, 3⁴, 3⁵)"},
+      {opts: [2, 4, 8, 15], ans: 15, expl: "15 is not a power of 2 (others are 2¹, 2², 2³)"},
+      {opts: [18, 24, 30, 44], ans: 44, expl: "44 is not divisible by 6 (others are multiples of 6)"},
+      {opts: [12, 18, 30, 42], ans: 42, expl: "42 is not divisible by 4 (others are multiples of 4)"},
+      {opts: [14, 21, 35, 49], ans: 14, expl: "14 is not a multiple of 7 (others are multiples of 7)"},
+      {opts: [16, 25, 36, 50], ans: 50, expl: "50 is not a perfect square (others are 4², 5², 6²)"},
+      {opts: [3, 6, 9, 12], ans: 3, expl: "3 is the only prime number (others are composite)"},
+      {opts: [100, 1000, 10000, 100000], ans: 100, expl: "100 is the only one that's not a power of 10 (others are 10³, 10⁴, 10⁵)"},
+      {opts: [11, 22, 33, 45], ans: 45, expl: "45 is not a multiple of 11 (others are multiples of 11)"}
+    ];
+    
+    let puzzleSeq = [], score = 0, idx = 0, timer = 60, duration = 60, tmInt, running = false;
+    
+    function shuffle(arr) {
+      return arr.map(x => [Math.random(), x]).sort((a, b) => a[0] - b[0]).map(a => a[1]);
+    }
+    
+    function setDuration(sec) {
+      duration = sec;
+      document.getElementById('timer-el').textContent = sec;
+      document.getElementById('b60').classList.toggle('selected', sec === 60);
+      document.getElementById('b30').classList.toggle('selected', sec === 30);
+    }
+    
+    function startGame() {
+      puzzleSeq = shuffle([...puzzles]);
+      score = 0;
+      idx = 0;
+      timer = duration;
+      running = true;
+      
+      document.getElementById('game-content').innerHTML = `
+        <div class="puzzle-section" id="puzzle-q">Find the number that doesn't belong:</div>
+        <div class="option-list" id="opt-list"></div>
+        <div class="explanation" id="explain"></div>
+        <div class="controls">
+          <button class="btn" onclick="endGame()">End Game</button>
+        </div>
+      `;
+      
+      updateScore();
+      showPuzzle();
+      
+      if (tmInt) clearInterval(tmInt);
+      tmInt = setInterval(() => {
+        if (!running) return;
+        timer--;
+        document.getElementById('timer-el').textContent = timer;
+        if (timer <= 0) endGame();
+      }, 1000);
+    }
+    
+    function showPuzzle() {
+      if (idx >= puzzleSeq.length) puzzleSeq = shuffle([...puzzles]);
+      const p = puzzleSeq[idx];
+      
+      document.getElementById('puzzle-q').textContent = `Find the number that doesn't belong:`;
+      document.getElementById('explain').textContent = '';
+      
+      let html = '';
+      shuffle([...p.opts]).forEach(o => {
+        html += `<button class="btn-num" onclick="pickAnswer(${o})" id="b${o}">${o}</button>`;
+      });
+      document.getElementById('opt-list').innerHTML = html;
+    }
+    
+    function pickAnswer(val) {
+      if (!running) return;
+      
+      const p = puzzleSeq[idx];
+      const btns = document.querySelectorAll('.btn-num');
+      btns.forEach(b => b.disabled = true);
+      
+      const wasRight = val === p.ans;
+      const selBtn = document.getElementById('b' + val);
+      
+      if (wasRight) {
+        score++;
+        selBtn.classList.add('right');
+      } else {
+        if (score > 0) score--;
+        selBtn.classList.add('wrong');
+      }
+      
+      updateScore();
+      document.getElementById('explain').textContent = wasRight ? 
+        `✓ Correct: ${p.expl}` : `✗ Incorrect: ${p.expl}`;
+      
+      setTimeout(() => {
+        idx++;
+        if (running) showPuzzle();
+      }, 1800);
+    }
+    
+    function updateScore() {
+      document.getElementById('score-el').textContent = score;
+    }
+    
+    function endGame() {
+      running = false;
+      if (tmInt) clearInterval(tmInt);
+      
+      document.getElementById('game-content').innerHTML = `
+        <div class="game-over">
+          <h2>Game Complete</h2>
+          <div class="final-score">Your Score: ${score}</div>
+          <div style="margin-bottom: 25px;">
+            <p>You solved ${score} puzzle${score !== 1 ? 's' : ''}</p>
+          </div>
+          <div class="controls">
+            <button class="btn" onclick="restartHome()">Main Menu</button>
+            <button class="btn btn-primary" onclick="startGame()">Play Again</button>
+          </div>
+        </div>
+      `;
+    }
+    
+    function restartHome() {
+      running = false;
+      if (tmInt) clearInterval(tmInt);
+      
+      document.getElementById('game-content').innerHTML = `
+        <div class="start-screen" id="start-panel">
+          <p style="margin-bottom: 25px; font-size: 18px; color: #444;">
+            Identify the number that doesn't fit the pattern. Solve as many as you can before time runs out!
+          </p>
+          
+          <div class="mode-select">
+            <button class="mode-btn selected" onclick="setDuration(60)" id="b60">60 seconds</button>
+            <button class="mode-btn" onclick="setDuration(30)" id="b30">30 seconds</button>
+          </div>
+          
+          <button class="btn btn-primary" onclick="startGame()">Start Game</button>
+        </div>
+      `;
+      
+      // Re-select the correct duration button
+      document.getElementById('b60').classList.toggle('selected', duration === 60);
+      document.getElementById('b30').classList.toggle('selected', duration === 30);
+    }
+    
+    // Initialize
+    setDuration(60);
+  </script>
+</body>
+</html>

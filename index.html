@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Game Collection</title>
 
   <!-- ✅ Google Analytics Tag -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBWP5KZB8K"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
+    function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
     gtag('config', 'G-SBWP5KZB8K');
@@ -55,7 +54,6 @@
     }
   </style>
 </head>
-
 <body>
   <h2>🧠 Puzzle Game Collection</h2>
 
@@ -69,19 +67,16 @@
   </div>
 
   <!-- Feedback Modal -->
-  <div id="feedbackModal"
-    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
-    <div
-      style="background:white; padding:20px; border-radius:10px; width:90%; max-width:400px; text-align:left; position:relative;">
-      <button id="closeModal"
-        style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
+  <div id="feedbackModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center;">
+    <div style="background:white; padding:20px; border-radius:10px; width:90%; max-width:400px; text-align:left; position:relative;">
+      <button id="closeModal" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:18px; cursor:pointer;">&times;</button>
       <h3>We’d love your feedback!</h3>
       <form id="feedbackForm">
         <label>Name (optional)</label>
-        <input type="text" name="name" style="width:100%; margin-bottom:10px; padding:5px;" />
+        <input type="text" name="name" style="width:100%; margin-bottom:10px; padding:5px;"/>
 
         <label>Email (optional)</label>
-        <input type="email" name="email" style="width:100%; margin-bottom:10px; padding:5px;" />
+        <input type="email" name="email" style="width:100%; margin-bottom:10px; padding:5px;"/>
 
         <label>Rating (1–5)</label>
         <select name="rating" required style="width:100%; margin-bottom:10px; padding:5px;">
@@ -103,16 +98,14 @@
           <option value="probably-not">Probably not</option>
         </select>
 
-        <button type="submit"
-          style="background:#27ae60; color:white; padding:10px 15px; border:none; cursor:pointer;">Submit</button>
+        <button type="submit" style="background:#27ae60; color:white; padding:10px 15px; border:none; cursor:pointer;">Submit</button>
       </form>
-      <div id="thanksMessage" style="display:none; text-align:center; color:green; margin-top:15px;">Thanks for your
-        feedback!</div>
+      <div id="thanksMessage" style="display:none; text-align:center; color:green; margin-top:15px;">Thanks for your feedback!</div>
     </div>
   </div>
 
   <script>
-    const games = ["game1.html", "game2.html", "game10.html", "game4.html", "game5.html", "game6.html", "game7.html", "game8.html", "game3.html", "game11.html"];
+    const games = ["game1.html", "game2.html", "game4.html", "game5.html", "game6.html", "game7.html", "game8.html", "game3.html", "game11.html", "game12.html", "game13.html", "game14.html"];
     let currentIndex = 0;
 
     const gameObject = document.getElementById("gameObject");
@@ -202,5 +195,4 @@
     });
   </script>
 </body>
-
 </html>
