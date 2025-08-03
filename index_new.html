@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Puzzle Game Collection</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #4361ee;
+      --secondary: #3f37c9;
+      --accent: #4cc9f0;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --success: #4caf50;
+      --warning: #ff9800;
+      --danger: #f44336;
+      --card-bg: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px 0;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 3.5rem;
+      margin-bottom: 15px;
+      color: var(--primary);
+      text-shadow: 0 3px 6px rgba(67, 97, 238, 0.2);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      color: var(--secondary);
+      font-weight: 800;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: #666;
+      max-width: 700px;
+      margin: 0 auto 20px;
+    }
+
+    .search-container {
+      max-width: 500px;
+      margin: 20px auto 30px;
+      position: relative;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 50px;
+      border: 2px solid #e0e0e0;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 4px 15px rgba(76, 201, 240, 0.25);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      font-size: 1.2rem;
+    }
+
+    .filter-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .filter-btn {
+      padding: 10px 20px;
+      border-radius: 30px;
+      background: white;
+      border: 2px solid #e0e0e0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    .filter-btn:hover {
+      background: #f0f4ff;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .game-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px var(--shadow);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    .game-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .game-thumbnail {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-bottom: 4px solid var(--accent);
+    }
+
+    .game-content {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-title {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      color: var(--dark);
+    }
+
+    .game-description {
+      color: #666;
+      margin-bottom: 15px;
+      flex: 1;
+      font-size: 0.95rem;
+    }
+
+    .game-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .game-rating {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #ff9800;
+      font-weight: 600;
+    }
+
+    .game-category {
+      background: #eef7ff;
+      color: var(--primary);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .play-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      font-weight: 700;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      margin-top: 15px;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .play-btn:hover {
+      background: var(--secondary);
+      transform: scale(1.02);
+    }
+
+    .game-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--success);
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      z-index: 10;
+    }
+
+    .featured {
+      border: 3px solid var(--accent);
+    }
+
+    .featured .game-badge {
+      background: var(--warning);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .page-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border: 1px solid #e0e0e0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+
+    .page-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .page-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      margin-top: 50px;
+      border-top: 1px solid #e0e0e0;
+      color: #666;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin: 20px 0;
+    }
+
+    .footer-links a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--secondary);
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+      }
+      
+      h1 {
+        font-size: 2.3rem;
+      }
+      
+      .logo {
+        font-size: 3rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .games-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .filter-container {
+        gap: 8px;
+      }
+      
+      .filter-btn {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <i class="fas fa-puzzle-piece"></i>
+      </div>
+      <h1>Brain Teaser Collection</h1>
+      <p class="subtitle">Challenge your mind with our handpicked selection of puzzle games. Each game is designed to test your logic, strategy, and problem-solving skills.</p>
+      
+      <!-- <div class="search-container">
+        <input type="text" class="search-box" placeholder="Search for games...">
+        <i class="fas fa-search search-icon"></i>
+      </div> -->
+      
+      <div class="filter-container">
+        <button class="filter-btn active">All Games</button>
+        <button class="filter-btn">Logic Puzzles</button>
+        <button class="filter-btn">Math Challenges</button>
+        <button class="filter-btn">Word Games</button>
+        <button class="filter-btn">Strategy</button>
+        <button class="filter-btn">New Releases</button>
+      </div>
+    </header>
+    
+    <main>
+      <div class="games-grid">
+        <!-- Game 1 -->
+        <div class="game-card featured">
+          <span class="game-badge">Featured</span>
+          <img src="https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Sudoku Challenge" class="game-thumbnail">
+          <div class="game-content">
+            <h3 class="game-title">Sudoku Challenge</h3>
+            <p class="game-description">Classic number puzzle with multiple difficulty levels. Fill the grid so every row, column, and 3x3 box contains digits 1-9.</p>
+            <div class="game-meta">
+              <div class="game-rating">
+                <i class="fas fa-star"></i>
+                4.8
+              </div>
+              <span class="game-category">Logic</span>
+            </div>
+            <button class="play-btn" onclick="openGame('game1.html')">Play Now</button>
+          </div>
+        </div>
+        
+        <!-- Game 2 -->
+        <div class="game-card">
+          <img src="https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Crossword Master" class="game-thumbnail">
+          <div class="game-content">
+            <h3 class="game-title">Crossword Master</h3>
+            <p class="game-description">Daily crossword puzzles with thousands of clues. Expand your vocabulary and test your knowledge.</p>
+            <div class="game-meta">
+              <div class="game-rating">
+                <i class="fas fa-star"></i>
+                4.6
+              </div>
+              <span class="game-category">Word</span>
+            </div>
+            <button class="play-btn" onclick="openGame('game2.html')">Play Now</button>
+          </div>
+        </div>
+        
+        <!-- Game 3 -->
+        <div class="game-card">
+          <img src="https://images.unsplash.com/photo-1589244157895-89f95f9d9e5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Math Riddles" class="game-thumbnail">
+          <div class="game-content">
+            <h3 class="game-title">Math Riddles</h3>
+            <p class="game-description">Solve creative math problems that require logical thinking. Progress through increasingly difficult levels.</p>
+            <div class="game-meta">
+              <div class="game-rating">
+                <i class="fas fa-star"></i>
+                4.5
+              </div>
+              <span class="game-category">Math</span>
+            </div>
+            <button class="play-btn" onclick="openGame('game3.html')">Play Now</button>
+          </div>
+        </div>
+        
+        <!-- Game 4 -->
+        <div class="game-card">
+          <img src="https://images.unsplash.com/photo-1553481187-be93c21490a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Chess Puzzles" class="game-thumbnail">
+          <div class="game-content">
+            <h3 class="game-title">Chess Puzzles</h3>
+            <p class="game-description">Improve your chess skills with tactical puzzles. Find the best move in critical positions.</p>
+            <div class="game-meta">
+              <div class="game-rating">
+                <i class="fas fa-star"></i>
+                4.7
+              </div>
+              <span class="game-category">Strategy</span>
+            </div>
+            <button class="play-btn" onclick="openGame('game4.html')">Play Now</button>
+          </div>
+        </div>
+        
+        <!-- Game 5 -->
+        <div class="game-card">
+          <img src="https://images.unsplash.com/photo-1588072432904-843af37f03ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Memory Match" class="game-thumbnail">
+          <div class="game-content">
+            <h3 class="game-title">Memory Match</h3>
+            <p class="game-description">Test your memory with this classic matching game. Find all pairs in the least moves possible.</p>
+            <div class="game-meta">
+              <div class="game-rating">
+                <i class="fas fa-star"></i>
+                4.3
+              </div>
+              <span class="game-category">Memory</span>
+            </div>
+            <button class="play-btn" onclick="openGame('game5.html')">Play Now</button>
+          </div>
+        </div>
+        
+        <!-- Game 6 -->
+        <div class="game-card">
+          <span class="game-badge">New</span>
+          <img src="https://images.unsplash.com/photo-1611849362103-5c0e5b1a6b5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80" alt="Logic Grid" class="game-thumbnail">
+          <div class="game-content">
+            <h3 class="game-title">Logic Grid</h3>
+            <p class="game-description">Solve complex logic problems using a grid. Deduce relationships between different elements.</p>
+            <div class="game-meta">
+              <div class="game-rating">
+                <i class="fas fa-star"></i>
+                4.9
+              </div>
+              <span class="game-category">Logic</span>
+            </div>
+            <button class="play-btn" onclick="openGame('game6.html')">Play Now</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="pagination">
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">4</button>
+        <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </main>
+    
+    <footer>
+      <div class="footer-links">
+        <a href="#">About Us</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
+      <p>&copy; 2023 Puzzle Game Collection. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    function openGame(gameUrl) {
+      // In a real implementation, this would open the game
+      // For this demo, we'll show an alert
+      alert(`Opening game: ${gameUrl}\n\nIn a real implementation, this would:\n1. Open the game in a new tab/window\n2. Or load the game in a modal/container\n\nCheck the browser console for the URL.`);
+      console.log(`Game URL to open: ${gameUrl}`);
+      
+      // Here's what you would use in production:
+      // Option 1: Open in new tab
+      // window.open(gameUrl, '_blank');
+      
+      // Option 2: Load in current page
+      // window.location.href = gameUrl;
+    }
+
+    // Filter buttons functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        // Add active class to clicked button
+        button.classList.add('active');
+        
+        // In a real implementation, this would filter the games
+        console.log(`Filtering by: ${button.textContent}`);
+      });
+    });
+
+    // Search functionality
+    const searchBox = document.querySelector('.search-box');
+    searchBox.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        console.log(`Searching for: ${searchBox.value}`);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spelling Sleuth</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #eaeaea;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        h1 {
+            font-weight: 700;
+            font-size: 28px;
+            color: #2c3e50;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+            font-weight: 400;
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            font-size: 15px;
+            gap: 10px;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 12px 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .timer-container {
+            width: 100%;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(to right, #2ecc71, #f1c40f, #e74c3c);
+            transition: width 0.5s linear;
+            border-radius: 5px;
+        }
+        
+        .word-scroll-container {
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            -ms-overflow-style: none;  /* Hide scrollbar for IE, Edge */
+            scrollbar-width: none;     /* Hide scrollbar for Firefox */
+        }
+        
+        .word-scroll-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome, Safari, Opera */
+        }
+        
+        .word-container {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            min-height: 70px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            min-width: min-content; /* Ensure container doesn't shrink */
+        }
+        
+        .letter-card {
+            width: 42px;
+            height: 52px;
+            perspective: 600px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex-shrink: 0; /* Prevent cards from shrinking */
+        }
+        
+        .letter-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.4s;
+            transform-style: preserve-3d;
+        }
+        
+        .letter-card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            font-size: 22px; /* Reduced font size */
+            font-weight: 700;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-front {
+            background: white;
+            color: #2c3e50;
+            border: 2px solid #3498db;
+        }
+        
+        .card-back {
+            background: #e8f4fc;
+            color: #27ae60;
+            transform: rotateY(180deg);
+            border: 2px solid #27ae60;
+        }
+        
+        .feedback {
+            height: 50px;
+            margin: 15px 0 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .correct {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .incorrect {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #3498db;
+            color: white;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
+        }
+        
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        #hint-btn {
+            background: #9b59b6;
+            box-shadow: 0 4px 8px rgba(155, 89, 182, 0.2);
+        }
+        
+        #hint-btn:hover {
+            background: #8e44ad;
+        }
+        
+        #new-word-btn {
+            background: #e67e22;
+            box-shadow: 0 4px 8px rgba(230, 126, 34, 0.2);
+        }
+        
+        #new-word-btn:hover {
+            background: #d35400;
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .game-over h2 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .game-over p {
+            font-size: 20px;
+            margin-bottom: 25px;
+            color: #7f8c8d;
+        }
+        
+        #restart-btn {
+            background: #2ecc71;
+            padding: 15px 35px;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
+        }
+        
+        #restart-btn:hover {
+            background: #27ae60;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .streak-indicator {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #f39c12;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .letter-card {
+                width: 38px;
+                height: 48px;
+                font-size: 20px;
+            }
+            
+            .stat-box {
+                padding: 10px 8px;
+            }
+            
+            .stat-value {
+                font-size: 20px;
+            }
+            
+            button {
+                padding: 11px 18px;
+                font-size: 14px;
+            }
+            
+            .controls {
+                gap: 10px;
+            }
+            
+            .feedback {
+                font-size: 16px;
+                margin: 10px 0 20px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .letter-card {
+                width: 35px;
+                height: 45px;
+                font-size: 18px;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Spelling Sleuth</h1>
+            <div class="subtitle">Find and correct the wrong letter</div>
+        </header>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-label">Score</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Solved</div>
+                <div class="stat-value" id="solved">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Streak</div>
+                <div class="stat-value" id="streak">0</div>
+            </div>
+        </div>
+        
+        <div class="timer-container">
+            <div class="timer-bar" id="timer-bar"></div>
+        </div>
+        
+        <div class="word-scroll-container">
+            <div class="word-container" id="word-container"></div>
+        </div>
+        
+        <div class="feedback" id="feedback">Find the incorrect letter!</div>
+        
+        <div class="controls">
+            <button id="hint-btn">Hint</button>
+            <button id="new-word-btn">Skip</button>
+        </div>
+        
+        <div class="game-over hidden" id="game-over">
+            <h2>Game Complete!</h2>
+            <p>You've solved all the words!</p>
+            <p>Your Final Score: <span id="final-score">0</span></p>
+            <button id="restart-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Game elements
+            const wordContainer = document.getElementById('word-container');
+            const timerBar = document.getElementById('timer-bar');
+            const scoreEl = document.getElementById('score');
+            const solvedEl = document.getElementById('solved');
+            const streakEl = document.getElementById('streak');
+            const feedbackEl = document.getElementById('feedback');
+            const gameOverScreen = document.getElementById('game-over');
+            const finalScoreEl = document.getElementById('final-score');
+            const hintBtn = document.getElementById('hint-btn');
+            const newWordBtn = document.getElementById('new-word-btn');
+            const restartBtn = document.getElementById('restart-btn');
+            
+            // Game variables
+            let score = 0;
+            let wordsSolved = 0;
+            let currentStreak = 0;
+            let timer;
+            let timeLeft = 20;
+            let currentWord;
+            let wrongLetterIndex;
+            let gameActive = true;
+            
+            // Track used words
+            let usedWordIndices = [];
+            
+            // Carefully curated word list with exactly one letter difference
+            const wordList = [
+    { word: "special", wrong: "spacial" },
+    { word: "calendar", wrong: "calender" },
+    { word: "price", wrong: "prise" },
+    { word: "receive", wrong: "receeve" },
+    { word: "rhythm", wrong: "rhytmm" },
+    { word: "separate", wrong: "seperate" },
+    { word: "sodium", wrong: "sodiam" },
+    { word: "weird", wrong: "weerd" },
+    { word: "balance", wrong: "balanse" },
+    { word: "bizarre", wrong: "bizarra" },
+    { word: "harvest", wrong: "harvast" },
+    { word: "journey", wrong: "journee" },
+    { word: "natural", wrong: "naturel" },
+    { word: "picture", wrong: "pictore" },
+    { word: "plastic", wrong: "plestic" },
+    { word: "problem", wrong: "problam" },
+    { word: "promise", wrong: "promize" },
+    { word: "respect", wrong: "respext" },
+    { word: "shelter", wrong: "shelcer" },
+    { word: "winter", wrong: "wintar" },
+];
+
+            
+            // Initialize game
+            function initGame() {
+                score = 0;
+                wordsSolved = 0;
+                currentStreak = 0;
+                timeLeft = 20;
+                gameActive = true;
+                usedWordIndices = [];
+                
+                scoreEl.textContent = score;
+                solvedEl.textContent = wordsSolved;
+                streakEl.textContent = currentStreak;
+                
+                gameOverScreen.classList.add('hidden');
+                feedbackEl.textContent = "Find the wrong letter!";
+                feedbackEl.className = "feedback";
+                
+                startNewWord();
+                startTimer();
+            }
+            
+            // Start a new word
+            function startNewWord() {
+                // Reset timer
+                timeLeft = 20;
+                updateTimer();
+                
+                // Clear previous word
+                wordContainer.innerHTML = '';
+                feedbackEl.textContent = "Find the wrong letter!";
+                feedbackEl.className = "feedback";
+                
+                // Check if all words have been used
+                if (usedWordIndices.length >= wordList.length) {
+                    endGame();
+                    return;
+                }
+                
+                // Get available words (not used yet)
+                const availableIndices = wordList.map((_, index) => index)
+                    .filter(index => !usedWordIndices.includes(index));
+                
+                // Get a random word from available words
+                const randomIndex = Math.floor(Math.random() * availableIndices.length);
+                const wordIndex = availableIndices[randomIndex];
+                const wordObj = wordList[wordIndex];
+                
+                // Mark this word as used
+                usedWordIndices.push(wordIndex);
+                
+                currentWord = wordObj.word;
+                const wrongWord = wordObj.wrong;
+                
+                // Find which letter is different
+                let differences = [];
+                for (let i = 0; i < Math.min(currentWord.length, wrongWord.length); i++) {
+                    if (currentWord[i] !== wrongWord[i]) {
+                        differences.push(i);
+                    }
+                }
+                
+                // Ensure exactly one difference
+                if (differences.length === 0) {
+                    // If no differences, pick a random letter to be wrong
+                    wrongLetterIndex = Math.floor(Math.random() * currentWord.length);
+                } else if (differences.length > 1) {
+                    // If multiple differences, pick the first one
+                    wrongLetterIndex = differences[0];
+                } else {
+                    wrongLetterIndex = differences[0];
+                }
+                
+                // Create letter cards
+                for (let i = 0; i < wrongWord.length; i++) {
+                    const letterCard = document.createElement('div');
+                    letterCard.className = 'letter-card';
+                    letterCard.dataset.index = i;
+                    
+                    letterCard.innerHTML = `
+                        <div class="card-inner">
+                            <div class="card-front">${wrongWord[i]}</div>
+                            <div class="card-back">${currentWord[i] || ''}</div>
+                        </div>
+                    `;
+                    
+                    letterCard.addEventListener('click', handleLetterClick);
+                    wordContainer.appendChild(letterCard);
+                }
+            }
+            
+            // Handle letter click
+            function handleLetterClick(e) {
+                if (!gameActive) return;
+                
+                const card = e.currentTarget;
+                const index = parseInt(card.dataset.index);
+                
+                // If correct letter
+                if (index === wrongLetterIndex) {
+                    card.classList.add('flipped');
+                    validateSolution();
+                } else {
+                    // Incorrect letter
+                    card.classList.add('flipped');
+                    setTimeout(() => {
+                        card.classList.remove('flipped');
+                        feedbackEl.textContent = "Try again!";
+                        feedbackEl.className = "feedback incorrect";
+                    }, 1000);
+                    
+                    // Penalty for wrong guess
+                    timeLeft = Math.max(3, timeLeft - 3);
+                    updateTimer();
+                }
+            }
+            
+            // Validate the solution after flipping
+            function validateSolution() {
+                // Check if all letters are correct
+                const cards = document.querySelectorAll('.letter-card');
+                let allCorrect = true;
+                
+                cards.forEach((card, index) => {
+                    const isFlipped = card.classList.contains('flipped');
+                    const shouldBeFlipped = (index === wrongLetterIndex);
+                    
+                    if (shouldBeFlipped && !isFlipped) {
+                        allCorrect = false;
+                    }
+                });
+                
+                if (allCorrect) {
+                    correctAnswer();
+                } else {
+                    feedbackEl.textContent = "Keep looking!";
+                    feedbackEl.className = "feedback";
+                }
+            }
+            
+            // Correct answer handling
+            function correctAnswer() {
+                feedbackEl.textContent = "Correct! Well done!";
+                feedbackEl.className = "feedback correct";
+                
+                // Update score
+                const timeBonus = Math.floor(timeLeft * 3);
+                const streakBonus = currentStreak * 5;
+                const points = 50 + timeBonus + streakBonus;
+                
+                score += points;
+                wordsSolved++;
+                currentStreak++;
+                
+                scoreEl.textContent = score;
+                solvedEl.textContent = wordsSolved;
+                streakEl.textContent = currentStreak;
+                
+                // Next word after delay
+                setTimeout(() => {
+                    if (gameActive) {
+                        startNewWord();
+                    }
+                }, 1500);
+            }
+            
+            // Timer functions
+            function startTimer() {
+                clearInterval(timer);
+                timer = setInterval(() => {
+                    timeLeft -= 0.1;
+                    updateTimer();
+                    
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        timeUp();
+                    }
+                }, 100);
+            }
+            
+            function updateTimer() {
+                timerBar.style.width = `${(timeLeft / 20) * 100}%`;
+            }
+            
+            // Time up
+            function timeUp() {
+                feedbackEl.textContent = "Time's up!";
+                feedbackEl.className = "feedback incorrect";
+                currentStreak = 0;
+                streakEl.textContent = currentStreak;
+                
+                // Reveal the correct letter
+                const cards = document.querySelectorAll('.letter-card');
+                if (cards[wrongLetterIndex]) {
+                    cards[wrongLetterIndex].classList.add('flipped');
+                }
+                
+                // Next word after delay
+                setTimeout(() => {
+                    if (gameActive) {
+                        startNewWord();
+                        startTimer();
+                    }
+                }, 1500);
+            }
+            
+            // End game when all words are completed
+            function endGame() {
+                gameActive = false;
+                clearInterval(timer);
+                finalScoreEl.textContent = score;
+                gameOverScreen.classList.remove('hidden');
+            }
+            
+            // Event listeners for buttons
+            hintBtn.addEventListener('click', () => {
+                if (!gameActive) return;
+                
+                feedbackEl.textContent = `The word is: ${currentWord}`;
+                feedbackEl.className = "feedback";
+                
+                // Time penalty for hint
+                timeLeft = Math.max(3, timeLeft - 5);
+                updateTimer();
+            });
+            
+            newWordBtn.addEventListener('click', () => {
+                if (!gameActive) return;
+                
+                currentStreak = 0;
+                streakEl.textContent = currentStreak;
+                startNewWord();
+            });
+            
+            restartBtn.addEventListener('click', initGame);
+            
+            // Start the game
+            initGame();
+        });
+    </script>
+</body>
+</html>
