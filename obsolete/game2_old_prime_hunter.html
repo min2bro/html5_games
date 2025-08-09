@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prime Number Hunter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            overflow: hidden;
+            padding: 10px;
+        }
+        
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 600px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .icon-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .game-board {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle, rgba(25, 25, 50, 0.8) 0%, rgba(10, 10, 30, 0.9) 100%);
+        }
+        
+        .ball {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            user-select: none;
+        }
+        
+        .ball:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+        }
+        
+        .prime {
+            background: radial-gradient(circle, #3498db, #2980b9);
+            color: #fff;
+            font-size: 1.8rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+        
+        .non-prime {
+            background: radial-gradient(circle, #3498db, #2980b9);
+            color: #fff;
+            font-size: 1.5rem;
+        }
+        
+        .instructions {
+            color: #ddd;
+            text-align: center;
+            padding: 10px;
+            font-size: 1rem;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+            display: none;
+        }
+        
+        .game-over h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #ff9a00;
+            text-shadow: 0 0 10px rgba(255, 154, 0, 0.7);
+            text-align: center;
+            padding: 0 10px;
+        }
+        
+        .final-score {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #2ecc71;
+            text-shadow: 0 0 15px rgba(46, 204, 113, 0.7);
+            margin: 20px 0;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ff9a00;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .highlight {
+            animation: highlight 0.5s ease-out;
+        }
+        
+        .correct {
+            background: radial-gradient(circle, #2ecc71, #27ae60) !important;
+            transform: scale(1.2);
+        }
+        
+        .incorrect {
+            background: radial-gradient(circle, #e74c3c, #c0392b) !important;
+            animation: shake 0.5s linear;
+        }
+        
+        @keyframes highlight {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .prime-facts {
+            max-width: 90%;
+            text-align: center;
+            margin: 15px 0;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #ddd;
+            padding: 0 15px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .game-container {
+                height: 500px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .stats {
+                font-size: 1rem;
+                gap: 15px;
+            }
+            
+            .icon-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+            
+            .game-over h2 {
+                font-size: 2rem;
+            }
+            
+            .final-score {
+                font-size: 3rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .game-container {
+                height: 450px;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            .stats {
+                gap: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .instructions {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+            
+            .icon-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            
+            .game-over h2 {
+                font-size: 1.8rem;
+            }
+            
+            .final-score {
+                font-size: 2.5rem;
+            }
+            
+            .prime-facts {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <div class="icon-controls">
+                <!-- <button class="icon-btn" id="startBtn" title="Start Game">
+                    <i class="fas fa-play"></i>
+                </button> -->
+                <button class="icon-btn" id="resetBtn" title="Reset Game">
+                    <i class="fas fa-redo"></i>
+                </button>
+            </div>
+            
+            <div class="header-content">
+                <h1>Prime Number Hunter</h1>
+                <div class="stats">
+                    <div class="timer">Time: <span id="time">30</span>s</div>
+                    <div class="score">Score: <span id="score">0</span></div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="instructions">
+            Click on PRIME numbers (divisible only by 1 and themselves)
+        </div>
+        
+        <div class="game-board" id="gameBoard"></div>
+        
+        <div class="game-over" id="gameOver">
+            <h2>Time's Up!</h2>
+            <div>Your Final Score:</div>
+            <div class="final-score" id="finalScore">0</div>
+            <button class="icon-btn" id="playAgainBtn" style="width: 50px; height: 50px; font-size: 1.5rem;">
+                <i class="fas fa-redo"></i>
+            </button>
+            <div class="prime-facts">
+                <p>Prime numbers are the building blocks of all whole numbers. 
+                The largest known prime has over 24 million digits!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const gameBoard = document.getElementById('gameBoard');
+            // const startBtn = document.getElementById('startBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const playAgainBtn = document.getElementById('playAgainBtn');
+            const gameOverScreen = document.getElementById('gameOver');
+            const timeDisplay = document.getElementById('time');
+            const scoreDisplay = document.getElementById('score');
+            const finalScoreDisplay = document.getElementById('finalScore');
+            
+            let gameActive = false;
+            let timeLeft = 30;
+            let score = 0;
+            let gameTimer;
+            let balls = [];
+            const ballCount = 8;
+            
+            // Function to check if a number is prime
+            function isPrime(num) {
+                if (num <= 1) return false;
+                if (num <= 3) return true;
+                if (num % 2 === 0 || num % 3 === 0) return false;
+                
+                for (let i = 5; i * i <= num; i += 6) {
+                    if (num % i === 0 || num % (i + 2) === 0) return false;
+                }
+                return true;
+            }
+            
+            // Create a ball with random properties
+            function createBall() {
+                const ball = document.createElement('div');
+                ball.classList.add('ball');
+                
+                // Use relative sizes for better mobile experience
+                const baseSize = Math.min(window.innerWidth, window.innerHeight) / 10;
+                const size = Math.floor(Math.random() * (baseSize * 0.7)) + (baseSize * 0.8);
+                ball.style.width = `${size}px`;
+                ball.style.height = `${size}px`;
+                
+                // Position with collision detection
+                let validPosition = false;
+                let x, y;
+                
+                while (!validPosition) {
+                    validPosition = true;
+                    const maxX = gameBoard.clientWidth - size;
+                    const maxY = gameBoard.clientHeight - size;
+                    x = Math.floor(Math.random() * maxX);
+                    y = Math.floor(Math.random() * maxY);
+                    
+                    // Check for overlap with existing balls
+                    for (const existingBall of balls) {
+                        if (!existingBall.parentNode) continue;
+                        
+                        const rect1 = {
+                            left: x,
+                            top: y,
+                            right: x + size,
+                            bottom: y + size
+                        };
+                        
+                        const rect2 = existingBall.getBoundingClientRect();
+                        const boardRect = gameBoard.getBoundingClientRect();
+                        const existingRect = {
+                            left: rect2.left - boardRect.left,
+                            top: rect2.top - boardRect.top,
+                            right: (rect2.left - boardRect.left) + rect2.width,
+                            bottom: (rect2.top - boardRect.top) + rect2.height
+                        };
+                        
+                        // Check for collision
+                        if (rect1.left < existingRect.right &&
+                            rect1.right > existingRect.left &&
+                            rect1.top < existingRect.bottom &&
+                            rect1.bottom > existingRect.top) {
+                            validPosition = false;
+                            break;
+                        }
+                    }
+                }
+                
+                ball.style.left = `${x}px`;
+                ball.style.top = `${y}px`;
+                
+                // Random number between 1 and 50
+                const number = Math.floor(Math.random() * 50) + 1;
+                ball.textContent = number;
+                
+                // Set class based on whether number is prime
+                if (isPrime(number)) {
+                    ball.classList.add('prime');
+                } else {
+                    ball.classList.add('non-prime');
+                }
+                
+                // Add click event
+                ball.addEventListener('click', () => {
+                    if (!gameActive) return;
+                    
+                    // Disable further clicks during animation
+                    ball.style.pointerEvents = 'none';
+                    
+                    if (ball.classList.contains('prime')) {
+                        // Correct prime click
+                        score++;
+                        scoreDisplay.textContent = score;
+                        
+                        // Visual feedback
+                        ball.classList.add('correct');
+                        createParticles(ball);
+                        
+                        // Replace the clicked ball after a delay
+                        setTimeout(() => {
+                            gameBoard.removeChild(ball);
+                            balls = balls.filter(b => b !== ball);
+                            balls.push(createBall());
+                            gameBoard.appendChild(balls[balls.length - 1]);
+                        }, 500);
+                    } else {
+                        // Incorrect click
+                        ball.classList.add('incorrect');
+                        
+                        // Reset after animation
+                        setTimeout(() => {
+                            ball.classList.remove('incorrect');
+                            ball.style.pointerEvents = 'auto';
+                        }, 1000);
+                    }
+                });
+                
+                return ball;
+            }
+            
+            // Create visual particles for feedback
+            function createParticles(element) {
+                const rect = element.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                for (let i = 0; i < 15; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // Random position around the element
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * 50 + 30;
+                    const x = centerX + Math.cos(angle) * distance;
+                    const y = centerY + Math.sin(angle) * distance;
+                    
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    
+                    // Random size and color
+                    const size = Math.random() * 10 + 5;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    const colors = ['#ff9a00', '#ff6600', '#ffcc00', '#ff3300'];
+                    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    document.body.appendChild(particle);
+                    
+                    // Animate particle
+                    particle.animate([
+                        { transform: `translate(0, 0)`, opacity: 1 },
+                        { transform: `translate(${Math.cos(angle) * 100}px, ${Math.sin(angle) * 100}px)`, opacity: 0 }
+                    ], {
+                        duration: 700,
+                        easing: 'ease-out'
+                    });
+                    
+                    // Remove particle after animation
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, 700);
+                }
+            }
+            
+            // Move balls around the screen
+            function moveBalls() {
+                if (!gameActive) return;
+                
+                balls.forEach(ball => {
+                    const rect = ball.getBoundingClientRect();
+                    const boardRect = gameBoard.getBoundingClientRect();
+                    
+                    let dx = parseFloat(ball.dataset.dx || (Math.random() * 2 - 1));
+                    let dy = parseFloat(ball.dataset.dy || (Math.random() * 2 - 1));
+                    
+                    // Slow down the movement
+                    dx *= 0.7;
+                    dy *= 0.7;
+                    
+                    // Ensure minimum movement
+                    if (Math.abs(dx) < 0.3) dx = Math.sign(dx) * 0.3;
+                    if (Math.abs(dy) < 0.3) dy = Math.sign(dy) * 0.3;
+                    
+                    // Update position
+                    let newX = rect.left - boardRect.left + dx;
+                    let newY = rect.top - boardRect.top + dy;
+                    
+                    // Boundary collision
+                    if (newX <= 0 || newX + rect.width >= boardRect.width) {
+                        dx = -dx * 0.8; // Bounce with dampening
+                    }
+                    
+                    if (newY <= 0 || newY + rect.height >= boardRect.height) {
+                        dy = -dy * 0.8; // Bounce with dampening
+                    }
+                    
+                    // Apply new position and velocity
+                    ball.style.left = `${newX}px`;
+                    ball.style.top = `${newY}px`;
+                    ball.dataset.dx = dx;
+                    ball.dataset.dy = dy;
+                });
+                
+                requestAnimationFrame(moveBalls);
+            }
+            
+            // Start the game
+            function startGame() {
+                if (gameActive) return;
+                
+                gameActive = true;
+                timeLeft = 30;
+                score = 0;
+                timeDisplay.textContent = timeLeft;
+                scoreDisplay.textContent = score;
+                gameOverScreen.style.display = 'none';
+                
+                // Clear existing balls
+                gameBoard.innerHTML = '';
+                balls = [];
+                
+                // Create new balls
+                for (let i = 0; i < ballCount; i++) {
+                    balls.push(createBall());
+                    gameBoard.appendChild(balls[i]);
+                }
+                
+                // Start game timer
+                gameTimer = setInterval(() => {
+                    timeLeft--;
+                    timeDisplay.textContent = timeLeft;
+                    
+                    if (timeLeft <= 0) {
+                        endGame();
+                    }
+                }, 1000);
+                
+                // Start ball movement
+                moveBalls();
+            }
+
+            
+            // End the game
+            function endGame() {
+                gameActive = false;
+                clearInterval(gameTimer);
+                
+                // Show game over screen
+                finalScoreDisplay.textContent = score;
+                gameOverScreen.style.display = 'flex';
+            }
+            
+            // Reset the game
+            function resetGame() {
+                clearInterval(gameTimer);
+                gameActive = false;
+                gameBoard.innerHTML = '';
+                timeDisplay.textContent = '30';
+                scoreDisplay.textContent = '0';
+                gameOverScreen.style.display = 'none';
+            }
+            
+            // Event listeners
+            // startBtn.addEventListener('click', startGame);
+            resetBtn.addEventListener('click', resetGame);
+            playAgainBtn.addEventListener('click', startGame);
+            
+            // Initialize the game board
+            resetGame();
+            //start game
+            startGame();
+        });
+    </script>
+</body>
+</html>

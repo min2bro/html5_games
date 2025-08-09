@@ -1,164 +1,804 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Game Collection</title>
-
-  <!-- Google Analytics Tag -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBWP5KZB8K"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-SBWP5KZB8K');
-  </script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Puzzle Game Collection - Hybrid Solution</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #fafafa;
-      text-align: center;
-      padding: 20px;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    #gameContainer {
-      margin: 20px auto;
-      width: 100%;
-      max-width: 375px; /* Mobile-friendly width */
-      height: 667px; /* Mobile-friendly height */
-      border: 2px solid #ccc;
-      overflow: hidden;
+    :root {
+      --primary: #4361ee;
+      --secondary: #3f37c9;
+      --accent: #4cc9f0;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --success: #4caf50;
+      --warning: #ff9800;
+      --danger: #f44336;
+      --card-bg: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      flex: 1;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px 0;
       position: relative;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      border-radius: 16px;
     }
 
-    iframe {
+    .logo {
+      font-size: 3.5rem;
+      margin-bottom: 15px;
+      color: var(--primary);
+      text-shadow: 0 3px 6px rgba(67, 97, 238, 0.2);
+      transition: var(--transition);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      color: var(--secondary);
+      font-weight: 800;
+      transition: var(--transition);
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: #666;
+      max-width: 700px;
+      margin: 0 auto 20px;
+      transition: var(--transition);
+    }
+
+    .filter-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 30px;
+    }
+
+    .filter-btn {
+      padding: 10px 20px;
+      border-radius: 30px;
+      background: white;
+      border: 2px solid #e0e0e0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.95rem;
+    }
+
+    .filter-btn:hover {
+      background: #f0f4ff;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+      opacity: 1;
+      transition: opacity 0.4s ease;
+    }
+
+    .games-grid.loading {
+      opacity: 0.5;
+    }
+
+    .game-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px var(--shadow);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    .game-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .game-thumbnail {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-bottom: 4px solid var(--accent);
+    }
+
+    .game-content {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-title {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+      color: var(--dark);
+    }
+
+    .game-description {
+      color: #666;
+      margin-bottom: 15px;
+      flex: 1;
+      font-size: 0.95rem;
+    }
+
+    .game-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .game-rating {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #ff9800;
+      font-weight: 600;
+    }
+
+    .game-category {
+      background: #eef7ff;
+      color: var(--primary);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .play-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: white;
+      text-align: center;
+      font-weight: 700;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: var(--transition);
+      margin-top: 15px;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .play-btn:hover {
+      background: var(--secondary);
+      transform: scale(1.02);
+    }
+
+    .game-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      z-index: 10;
+    }
+
+    .featured .game-badge {
+      background: var(--warning);
+    }
+
+    .new .game-badge {
+      background: var(--success);
+    }
+
+    .featured {
+      border: 3px solid var(--accent);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .page-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border: 1px solid #e0e0e0;
+      cursor: pointer;
+      transition: var(--transition);
+      font-weight: 600;
+    }
+
+    .page-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .page-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      margin-top: 50px;
+      border-top: 1px solid #e0e0e0;
+      color: #666;
+      background: white;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin: 20px 0;
+    }
+
+    .footer-links a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--secondary);
+      text-decoration: underline;
+    }
+    
+    /* Game Container Styles */
+    #gameContainer {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      z-index: 1000;
+      flex-direction: column;
+    }
+    
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+    
+    .back-btn {
+      padding: 8px 15px;
+      background: #f0f4ff;
+      color: var(--primary);
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .game-title-container {
+      text-align: center;
+      flex: 1;
+    }
+    
+    #gameFrame {
+      flex: 1;
+      width: 100%;
+      border: none;
+    }
+    
+    /* Responsive Game Frame */
+    .game-frame-container {
+      position: relative;
+      width: 100%;
+      height: 0;
+      padding-bottom: min(100%, 90vh); /* Responsive aspect ratio */
+      overflow: hidden;
+      flex: 1;
+    }
+    
+    #gameFrame {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       border: none;
-      transform-origin: 0 0;
     }
 
-    .nav-buttons {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 15px;
+    /* Loading animation */
+    .loader {
+      display: none;
+      text-align: center;
+      padding: 30px;
     }
-
-    button {
-      padding: 12px 25px;
-      font-size: 16px;
-      cursor: pointer;
-      background: #4285f4;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    
+    .loader .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-left-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
     }
-
-    button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-      opacity: 0.7;
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
-
-    /* Mobile-specific styles */
-    @media (max-width: 480px) {
-      body {
-        padding: 10px;
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
       }
       
-      #gameContainer {
-        width: 100%;
-        max-width: 100%;
-        height: 80vh;
-        border: none;
-        border-radius: 0;
-        margin: 0 auto 15px;
+      h1 {
+        font-size: 2.3rem;
       }
+      
+      .logo {
+        font-size: 3rem;
+      }
+      
+      .game-header {
+        padding: 10px 15px;
+      }
+    }
 
-      .nav-buttons {
-        position: sticky;
-        bottom: 15px;
-        z-index: 100;
+    @media (max-width: 480px) {
+      .games-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .filter-container {
+        gap: 8px;
+      }
+      
+      .filter-btn {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+      }
+      
+      .container {
+        padding: 15px;
+      }
+      
+      .game-title-container h2 {
+        font-size: 1.1rem;
       }
     }
   </style>
 </head>
 <body>
-  <h2>🧠 Puzzle Game Collection</h2>
-
+  <!-- Game Collection Hub -->
+  <div id="collectionHub">
+    <div class="container">
+      <header>
+        <div class="logo">
+          <i class="fas fa-puzzle-piece"></i>
+        </div>
+        <h1>Brain Teaser Collection</h1>
+        <p class="subtitle">Challenge your mind with our handpicked selection of puzzle games. Each game is designed to test your logic, strategy, and problem-solving skills.</p>
+        
+        <div class="filter-container">
+          <button class="filter-btn active">All Games</button>
+          <button class="filter-btn">Logic Puzzles</button>
+          <button class="filter-btn">Math Challenges</button>
+          <button class="filter-btn">Word Games</button>
+          <button class="filter-btn">Strategy</button>
+          <button class="filter-btn">New Releases</button>
+        </div>
+      </header>
+      
+      <main>
+        <div class="loader" id="loader">
+          <div class="spinner"></div>
+          <p>Loading games...</p>
+        </div>
+        
+        <div class="games-grid" id="gamesGrid">
+          <!-- Game cards will be generated by JavaScript -->
+        </div>
+        
+        <div class="pagination" id="pagination">
+          <!-- Pagination buttons will be generated by JavaScript -->
+        </div>
+      </main>
+    </div>
+    
+    <footer>
+      <div class="footer-links">
+        <a href="#">About Us</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
+      <p>&copy; 2023 Puzzle Game Collection. All rights reserved.</p>
+    </footer>
+  </div>
+  
+  <!-- Game Container -->
   <div id="gameContainer">
-    <iframe id="gameFrame" src="game1.html"></iframe>
+    <div class="game-header">
+      <button class="back-btn" id="backToHub">
+        <i class="fas fa-arrow-left"></i> Back to Games
+      </button>
+      <div class="game-title-container">
+        <h2 id="currentGameTitle">Game Title</h2>
+      </div>
+      <div></div> <!-- Spacer for alignment -->
+    </div>
+    
+    <div class="game-frame-container">
+      <iframe id="gameFrame"></iframe>
+    </div>
   </div>
 
-  <div class="nav-buttons">
-    <button id="prevBtn">← Prev</button>
-    <button id="nextBtn">Next →</button>
-  </div>
-
-  <!-- Feedback Modal (unchanged) -->
   <script>
-    const games = ["game1.html", "game2.html", "game4.html", "game5.html", "game6.html", "game7.html", "game8.html", "game3.html", 
-                   "game11.html", "game12.html", "game13.html", "game14.html", "game15.html", "game16.html"];
-    let currentIndex = 0;
+    // Game data for different pages
+    const gameData = {
+      1: [
+        { 
+          title: "Number Ball Sum Challenge", 
+          description: "Tap on three balls that sum to the target number.",
+          rating: 4.8,
+          category: "Logic",
+          badge: "featured",
+          image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game1.html"
+        },
+        { 
+          title: "Prime Number Hunter", 
+          description: "Tap only the prime numbers before time runs out to train your speed and number sense.",
+          rating: 4.6,
+          category: "Word",
+          image: "https://images.unsplash.com/photo-1589254065878-42c9da997008?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game2.html"
+        },
+        { 
+          title: "Math Riddles", 
+          description: "Solve creative math problems that require logical thinking. Progress through increasingly difficult levels.",
+          rating: 4.5,
+          category: "Math",
+          image: "https://images.unsplash.com/photo-1589244157895-89f95f9d9e5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game3.html"
+        },
+        { 
+          title: "Math Grid Puzzles", 
+          description: "Fill the grid with numbers to satisfy all row and column equations using logic and math skills.",
+          rating: 4.7,
+          category: "Strategy",
+          image: "https://images.unsplash.com/photo-1553481187-be93c21490a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game4.html"
+        },
+        { 
+          title: "Word Ladder Game", 
+          description: "Change one letter at a time to climb from the start word to the target word in the fewest steps.",
+          rating: 4.3,
+          category: "Memory",
+          image: "https://images.unsplash.com/photo-1588072432904-843af37f03ed?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game6.html"
+        },
+        { 
+          title: "Shape Memory Challenge", 
+          description: "Memorize and match shapes in the correct order to sharpen focus and visual recall.",
+          rating: 4.9,
+          category: "Logic",
+          badge: "new",
+          image: "https://images.unsplash.com/photo-1611849362103-5c0e5b1a6b5d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game7.html"
+        }
+      ],
+      2: [
+        { 
+          title: "Fraction Bridge", 
+          description: "Complete fraction bridges by selecting the correct missing fraction.",
+          rating: 4.7,
+          category: "Math",
+          badge: "new",
+          image: "https://images.unsplash.com/photo-1509228468518-180dd4864904?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game16.html"
+        },
+        { 
+          title: "Multiples Dash", 
+          description: "Learn multiples by clicking on the racing numbers.",
+          rating: 4.6,
+          category: "Logic",
+          image: "https://images.unsplash.com/photo-1516110833967-0b5716ca1387?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game8.html"
+        },
+        { 
+          title: "Alien word Invasion", 
+          description: "Identify the correct word before they are dropped and lost",
+          rating: 4.4,
+          category: "Logic",
+          image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game11.html"
+        },
+        { 
+          title: "Math Maze Slider", 
+          description: "Navigate the number thru the mathematical operations to reach the Target",
+          rating: 4.5,
+          category: "Math",
+          image: "https://images.unsplash.com/photo-1543286386-713bdd548da4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game12.html"
+        },
+        { 
+          title: "Odd one out", 
+          description: "One of them doesn't belong and you have to identify it",
+          rating: 4.3,
+          category: "Word",
+          image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game13.html"
+        },
+        { 
+          title: "Shape Sudoku", 
+          description: "Play Sudoku but with Shapes and Not numbers",
+          rating: 4.8,
+          category: "Math",
+          badge: "featured",
+          image: "https://images.unsplash.com/photo-1589998059171-988d887df646?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game14.html"
+        }
+      ],
+      3: [
+        { 
+          title: "Spelling Sleuth", 
+          description: "Do you want to become a spell bee? Come and crack this puzzle",
+          rating: 4.6,
+          category: "Math",
+          image: "https://images.unsplash.com/photo-1542621334-a254cf47733d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game15.html"
+        },
+        { 
+          title: "Fraction Match", 
+          description: "Tap and score by identifying the Equivalent Fractions",
+          rating: 4.7,
+          category: "Memory",
+          badge: "new",
+          image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game17.html"
+        },
+        { 
+          title: "Probability Quest", 
+          description: "Make choices based on probability to maximize your score.",
+          rating: 4.5,
+          category: "Math",
+          image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game21.html"
+        },
+        { 
+          title: "Trigonometry Trials", 
+          description: "Solve trigonometry puzzles to unlock new levels.",
+          rating: 4.4,
+          category: "Math",
+          image: "https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game22.html"
+        },
+        { 
+          title: "Cryptogram Challenge", 
+          description: "Decode encrypted messages using logical deduction.",
+          rating: 4.8,
+          category: "Word",
+          badge: "featured",
+          image: "https://images.unsplash.com/photo-1589652717521-10c0d092dea9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game18.html"
+        },
+        { 
+          title: "Calculus Conquest", 
+          description: "Apply calculus concepts to solve advanced puzzles.",
+          rating: 4.9,
+          category: "Math",
+          image: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&h=400&q=80",
+          file: "game19.html"
+        }
+      ]
+    };
 
-    const gameFrame = document.getElementById("gameFrame");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
+    let currentPage = 1;
+    const totalPages = Object.keys(gameData).length;
 
-    function updateGame() {
-      const currentGame = games[currentIndex];
-      gameFrame.src = currentGame;
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = currentIndex === games.length - 1;
+    function showPage(pageNum) {
+      // Show loading state
+      document.getElementById('gamesGrid').classList.add('loading');
+      document.getElementById('loader').style.display = 'block';
+      
+      // Simulate loading delay for UX
+      setTimeout(() => {
+        currentPage = pageNum;
+        
+        // Update active page button
+        document.querySelectorAll('.page-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        document.querySelector(`.page-btn[data-page="${pageNum}"]`).classList.add('active');
+        
+        // Generate game cards for this page
+        renderGames(gameData[pageNum] || []);
+        
+        // Hide loader
+        document.getElementById('gamesGrid').classList.remove('loading');
+        document.getElementById('loader').style.display = 'none';
+      }, 500);
+    }
 
-      // Send GA4 event: Game viewed
-      gtag('event', 'game_viewed', {
-        event_category: 'Game',
-        event_label: currentGame
+    function renderGames(games) {
+      const container = document.getElementById('gamesGrid');
+      container.innerHTML = '';
+      
+      games.forEach(game => {
+        const badgeClass = game.badge ? ` ${game.badge}` : '';
+        const badgeHTML = game.badge 
+          ? `<span class="game-badge">${game.badge === 'featured' ? 'Featured' : 'New'}</span>` 
+          : '';
+        
+        const gameCard = `
+          <div class="game-card${badgeClass}">
+            ${badgeHTML}
+            <img src="${game.image}" alt="${game.title}" class="game-thumbnail">
+            <div class="game-content">
+              <h3 class="game-title">${game.title}</h3>
+              <p class="game-description">${game.description}</p>
+              <div class="game-meta">
+                <div class="game-rating">
+                  <i class="fas fa-star"></i>
+                  ${game.rating}
+                </div>
+                <span class="game-category">${game.category}</span>
+              </div>
+              <button class="play-btn" data-game="${game.file}" data-title="${game.title}">Play Now</button>
+            </div>
+          </div>
+        `;
+        container.innerHTML += gameCard;
+      });
+      
+      // Add event listeners to play buttons
+      document.querySelectorAll('.play-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const gameFile = this.getAttribute('data-game');
+          const gameTitle = this.getAttribute('data-title');
+          openGame(gameFile, gameTitle);
+        });
       });
     }
 
-    prevBtn.addEventListener("click", () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        updateGame();
+    function renderPagination() {
+      const container = document.getElementById('pagination');
+      container.innerHTML = '';
+      
+      // Previous button
+      container.innerHTML += `
+        <button class="page-btn" onclick="showPage(${currentPage > 1 ? currentPage - 1 : 1})" 
+          ${currentPage === 1 ? 'disabled' : ''}>
+          <i class="fas fa-chevron-left"></i>
+        </button>
+      `;
+      
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        container.innerHTML += `
+          <button class="page-btn ${i === currentPage ? 'active' : ''}" 
+            data-page="${i}" onclick="showPage(${i})">
+            ${i}
+          </button>
+        `;
       }
+      
+      // Next button
+      container.innerHTML += `
+        <button class="page-btn" onclick="showPage(${currentPage < totalPages ? currentPage + 1 : totalPages})" 
+          ${currentPage === totalPages ? 'disabled' : ''}>
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      `;
+    }
+
+    function openGame(gameUrl, gameTitle) {
+      // Set the game title
+      document.getElementById('currentGameTitle').textContent = gameTitle;
+      
+      // Show the game container
+      document.getElementById('gameContainer').style.display = 'flex';
+      
+      // Hide the collection hub
+      document.getElementById('collectionHub').style.display = 'none';
+      
+      // Load the game in the iframe
+      document.getElementById('gameFrame').src = gameUrl;
+    }
+
+    // Back to hub functionality
+    document.getElementById('backToHub').addEventListener('click', function() {
+      // Hide game container
+      document.getElementById('gameContainer').style.display = 'none';
+      
+      // Show collection hub
+      document.getElementById('collectionHub').style.display = 'block';
+      
+      // Stop the game
+      document.getElementById('gameFrame').src = '';
     });
 
-    nextBtn.addEventListener("click", () => {
-      if (currentIndex < games.length - 1) {
-        currentIndex++;
-        updateGame();
-
-        // Send GA4 event: Next button clicked
-        gtag('event', 'next_button_clicked', {
-          event_category: 'Navigation',
-          event_label: games[currentIndex]
-        });
-
-        // If just loaded last game
-        if (currentIndex === 2 || currentIndex === games.length - 1) {
-          setTimeout(() => {
-            const wantsFeedback = confirm("Do you want to let us know if you are enjoying this game?");
-            if (wantsFeedback) {
-              document.getElementById("feedbackModal").style.display = "flex";
-            }
-          }, 300);
-        }
-      }
+    // Filter buttons functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        // Add active class to clicked button
+        button.classList.add('active');
+        
+        // In a real implementation, this would filter the games
+        console.log(`Filtering by: ${button.textContent}`);
+      });
     });
 
-    // Initialize on first load
-    updateGame();
-
-    // Feedback modal logic (unchanged)
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', () => {
+      // Render the first page of games
+      showPage(1);
+      
+      // Render pagination controls
+      renderPagination();
+    });
   </script>
 </body>
 </html>

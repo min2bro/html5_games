@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Game Collection</title>
+
+  <!-- Google Analytics Tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBWP5KZB8K"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-SBWP5KZB8K');
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fafafa;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+    }
+
+    #gameContainer {
+      margin: 20px auto;
+      width: 100%;
+      max-width: 375px; /* Mobile-friendly width */
+      height: 667px; /* Mobile-friendly height */
+      border: 2px solid #ccc;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 16px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      transform-origin: 0 0;
+    }
+
+    .nav-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* Mobile-specific styles */
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+      
+      #gameContainer {
+        width: 100%;
+        max-width: 100%;
+        height: 80vh;
+        border: none;
+        border-radius: 0;
+        margin: 0 auto 15px;
+      }
+
+      .nav-buttons {
+        position: sticky;
+        bottom: 15px;
+        z-index: 100;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>🧠 Puzzle Game Collection</h2>
+
+  <div id="gameContainer">
+    <iframe id="gameFrame" src="game1.html"></iframe>
+  </div>
+
+  <div class="nav-buttons">
+    <button id="prevBtn">← Prev</button>
+    <button id="nextBtn">Next →</button>
+  </div>
+
+  <!-- Feedback Modal (unchanged) -->
+  <script>
+    const games = ["game1.html", "game2.html", "game4.html", "game5.html", "game6.html", "game7.html", "game8.html", "game3.html", 
+                   "game11.html", "game12.html", "game13.html", "game14.html", "game15.html", "game16.html"];
+    let currentIndex = 0;
+
+    const gameFrame = document.getElementById("gameFrame");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function updateGame() {
+      const currentGame = games[currentIndex];
+      gameFrame.src = currentGame;
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === games.length - 1;
+
+      // Send GA4 event: Game viewed
+      gtag('event', 'game_viewed', {
+        event_category: 'Game',
+        event_label: currentGame
+      });
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateGame();
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentIndex < games.length - 1) {
+        currentIndex++;
+        updateGame();
+
+        // Send GA4 event: Next button clicked
+        gtag('event', 'next_button_clicked', {
+          event_category: 'Navigation',
+          event_label: games[currentIndex]
+        });
+
+        // If just loaded last game
+        if (currentIndex === 2 || currentIndex === games.length - 1) {
+          setTimeout(() => {
+            const wantsFeedback = confirm("Do you want to let us know if you are enjoying this game?");
+            if (wantsFeedback) {
+              document.getElementById("feedbackModal").style.display = "flex";
+            }
+          }, 300);
+        }
+      }
+    });
+
+    // Initialize on first load
+    updateGame();
+
+    // Feedback modal logic (unchanged)
+  </script>
+</body>
+</html>

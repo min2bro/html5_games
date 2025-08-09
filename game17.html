@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fraction Match | NY Times Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Source Sans 3', sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f8f8f8;
+            padding: 20px;
+            color: #333;
+            background-image: linear-gradient(to bottom, rgba(245, 245, 245, 0.8), rgba(245, 245, 245, 0.8)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f0f0f0"/><path d="M0 0L100 100M100 0L0 100" stroke="%23e6e6e6" stroke-width="0.5"/></svg>');
+        }
+        
+        .game-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #e0e0e0;
+        }
+        
+        /* Clean Header */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .game-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+            letter-spacing: 0.5px;
+            flex-grow: 1;
+            text-align: center;
+            font-family: 'Lora', serif;
+        }
+        
+        /* Reset icon in header */
+        .reset-icon {
+            background: white;
+            color: #2c3e50;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.1rem;
+        }
+        
+        .reset-icon:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Instructions */
+        .instructions {
+            text-align: center;
+            padding: 10px;
+            background: #f9f9f9;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-bottom: 1px solid #e0e0e0;
+            font-style: italic;
+        }
+        
+        /* Stats Bar */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 5px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .stat-box {
+            text-align: center;
+            padding: 8px;
+            min-width: 70px;
+        }
+        
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2c3e50;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Target Fraction */
+        .target-container {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            margin: 15px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .target-label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        
+        .target-fraction {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0a5e8c;
+            font-family: 'Lora', serif;
+        }
+        
+        /* Game Grid */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 20px;
+            padding: 10px;
+        }
+        
+        .grid-cell {
+            aspect-ratio: 1;
+            border-radius: 2px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            position: relative;
+            background: white;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-family: 'Lora', serif;
+        }
+        
+        .grid-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 94, 140, 0.05);
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .grid-cell:hover::before {
+            opacity: 1;
+        }
+        
+        .grid-cell.correct {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border-color: #28a745;
+        }
+        
+        .grid-cell.incorrect {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        .dissolve {
+            animation: dissolve 0.5s ease forwards;
+        }
+        
+        @keyframes dissolve {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Controls */
+        .controls {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .control-btn {
+            padding: 12px 30px;
+            background: #0a5e8c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Source Sans 3', sans-serif;
+        }
+        
+        .control-btn:hover {
+            background: #094b70;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Messages */
+        .message-container {
+            text-align: center;
+            margin: 10px 0;
+            min-height: 40px;
+        }
+        
+        .message {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .message.correct {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border-color: #28a745;
+        }
+        
+        .message.incorrect {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        /* Final Score */
+        .final-score {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+        
+        .final-score h2 {
+            font-family: 'Lora', serif;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #0a5e8c;
+        }
+        
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #121212;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Mobile optimization */
+        @media (max-width: 480px) {
+            .game-container {
+                max-width: 100%;
+            }
+            
+            .grid-container {
+                gap: 6px;
+            }
+            
+            .grid-cell {
+                font-size: 1.1rem;
+            }
+            
+            .target-fraction {
+                font-size: 1.8rem;
+            }
+            
+            .stat-value {
+                font-size: 1.2rem;
+            }
+            
+            .reset-icon {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
+            }
+            
+            .game-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="reset-icon" id="resetBtn" title="Reset Game">
+                <i class="fas fa-redo"></i>
+            </div>
+            <div class="game-title">Fraction Match</div>
+            <div class="reset-icon" id="helpBtn" title="Game Instructions">
+                <i class="fas fa-question"></i>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            Match the target fraction before it dissolves
+        </div>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-value" id="timer">05:00</div>
+                <div class="stat-label">Time</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">Score</div>
+            </div>
+        </div>
+        
+        <div class="target-container">
+            <div class="target-label">Match This Fraction:</div>
+            <div class="target-fraction" id="targetFraction">3/4</div>
+        </div>
+        
+        <div class="grid-container" id="gridContainer">
+            <!-- Grid cells will be generated by JavaScript -->
+        </div>
+        
+        <div class="message-container">
+            <div class="message" id="message">Game starts in 3 seconds...</div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="startBtn">
+                Start Game
+            </button>
+        </div>
+        
+        <div class="final-score" id="finalScore">
+            <h2>Game Complete!</h2>
+            <div class="stat-label">Your Final Score</div>
+            <div class="score-value" id="finalScoreValue">0</div>
+            <button class="control-btn" id="restartBtn">
+                Play Again
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add Font Awesome for icons
+            const fontAwesome = document.createElement('link');
+            fontAwesome.rel = 'stylesheet';
+            fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+            document.head.appendChild(fontAwesome);
+            
+            class FractionMemoryGame {
+                constructor() {
+                    this.score = 0;
+                    this.gameTime = 5 * 60; // 5 minutes in seconds
+                    this.targetFraction = '';
+                    this.cells = [];
+                    this.cellUpdateInterval = null;
+                    this.gameTimer = null;
+                    this.gameActive = false;
+                    
+                    this.gridContainer = document.getElementById('gridContainer');
+                    this.targetFractionEl = document.getElementById('targetFraction');
+                    this.scoreEl = document.getElementById('score');
+                    this.timerEl = document.getElementById('timer');
+                    this.startBtn = document.getElementById('startBtn');
+                    this.messageEl = document.getElementById('message');
+                    this.finalScore = document.getElementById('finalScore');
+                    this.finalScoreValue = document.getElementById('finalScoreValue');
+                    this.restartBtn = document.getElementById('restartBtn');
+                    this.resetBtn = document.getElementById('resetBtn');
+                    this.helpBtn = document.getElementById('helpBtn');
+                    
+                    this.init();
+                }
+                
+                init() {
+                    this.startBtn.addEventListener('click', () => this.startGame());
+                    this.restartBtn.addEventListener('click', () => location.reload());
+                    this.resetBtn.addEventListener('click', () => this.resetGame());
+                    this.helpBtn.addEventListener('click', () => this.showInstructions());
+                    this.createGrid();
+                }
+                
+                createGrid() {
+                    this.gridContainer.innerHTML = '';
+                    this.cells = [];
+                    
+                    // Create 16 cells for the grid
+                    for (let i = 0; i < 16; i++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'grid-cell';
+                        cell.dataset.index = i;
+                        cell.addEventListener('click', () => this.checkAnswer(i));
+                        this.gridContainer.appendChild(cell);
+                        this.cells.push(cell);
+                    }
+                }
+                
+                startGame() {
+                    if (this.gameActive) return;
+                    
+                    this.gameActive = true;
+                    this.startBtn.disabled = true;
+                    this.score = 0;
+                    this.scoreEl.textContent = this.score;
+                    this.gameTime = 5 * 60; // 5 minutes
+                    this.updateTimerDisplay();
+                    this.finalScore.style.display = 'none';
+                    
+                    // Show countdown message
+                    this.showMessage("Game starting in 3 seconds...");
+                    
+                    // Start the game after 3 seconds
+                    setTimeout(() => {
+                        this.generateFractions();
+                        this.showMessage("Match the fraction at the top!");
+                        
+                        // Start game timer
+                        this.gameTimer = setInterval(() => {
+                            this.gameTime--;
+                            this.updateTimerDisplay();
+                            
+                            if (this.gameTime <= 0) {
+                                this.endGame();
+                            }
+                        }, 1000);
+                        
+                        // Start cell update interval
+                        this.cellUpdateInterval = setInterval(() => {
+                            this.updateRandomCells();
+                        }, 5000);
+                    }, 3000);
+                }
+                
+                generateFractions() {
+                    // Generate random fractions
+                    const fractions = [];
+                    const denominators = [2, 3, 4, 5, 6, 8, 10, 12];
+                    
+                    // Generate 8 random fractions (each will appear twice)
+                    for (let i = 0; i < 8; i++) {
+                        const denom = denominators[Math.floor(Math.random() * denominators.length)];
+                        const numer = Math.floor(Math.random() * (denom - 1)) + 1;
+                        fractions.push(`${numer}/${denom}`);
+                        fractions.push(`${numer}/${denom}`);
+                    }
+                    
+                    // Shuffle the fractions
+                    this.shuffleArray(fractions);
+                    
+                    // Assign fractions to cells
+                    for (let i = 0; i < 16; i++) {
+                        this.cells[i].textContent = fractions[i];
+                        this.cells[i].dataset.fraction = fractions[i];
+                        this.cells[i].classList.remove('correct', 'incorrect');
+                    }
+                    
+                    // Select a random target fraction that appears at least twice
+                    const candidateFractions = fractions.filter((f, idx, arr) => 
+                        arr.indexOf(f) !== idx
+                    );
+                    
+                    this.targetFraction = candidateFractions[Math.floor(Math.random() * candidateFractions.length)];
+                    this.targetFractionEl.textContent = this.targetFraction;
+                }
+                
+                updateRandomCells() {
+                    // Update 4 random cells with new fractions
+                    const cellsToUpdate = this.getRandomIndices(4, 16);
+                    
+                    cellsToUpdate.forEach(index => {
+                        this.cells[index].classList.add('dissolve');
+                        
+                        setTimeout(() => {
+                            // Generate new fraction
+                            const denominators = [2, 3, 4, 5, 6, 8, 10, 12];
+                            const denom = denominators[Math.floor(Math.random() * denominators.length)];
+                            const numer = Math.floor(Math.random() * (denom - 1)) + 1;
+                            const newFraction = `${numer}/${denom}`;
+                            
+                            // Update cell
+                            this.cells[index].textContent = newFraction;
+                            this.cells[index].dataset.fraction = newFraction;
+                            this.cells[index].classList.remove('dissolve', 'correct', 'incorrect');
+                        }, 500);
+                    });
+                }
+                
+                getRandomIndices(count, max) {
+                    const indices = [];
+                    while (indices.length < count) {
+                        const randomIndex = Math.floor(Math.random() * max);
+                        if (!indices.includes(randomIndex)) {
+                            indices.push(randomIndex);
+                        }
+                    }
+                    return indices;
+                }
+                
+                checkAnswer(index) {
+                    if (!this.gameActive || this.cells[index].classList.contains('dissolve')) {
+                        return;
+                    }
+                    
+                    const selectedFraction = this.cells[index].dataset.fraction;
+                    const isCorrect = selectedFraction === this.targetFraction;
+                    
+                    if (isCorrect) {
+                        this.score += 5;
+                        this.scoreEl.textContent = this.score;
+                        this.cells[index].classList.add('correct');
+                        this.showMessage("Correct! +5 points", "correct");
+                    } else {
+                        this.score = Math.max(0, this.score - 2);
+                        this.scoreEl.textContent = this.score;
+                        this.cells[index].classList.add('incorrect');
+                        this.showMessage("Incorrect! -2 points", "incorrect");
+                    }
+                    
+                    // Reset the cell after a short delay
+                    setTimeout(() => {
+                        this.cells[index].classList.remove('correct', 'incorrect');
+                    }, 1000);
+                }
+                
+                showMessage(text, type = '') {
+                    this.messageEl.textContent = text;
+                    this.messageEl.className = `message ${type} show`;
+                    
+                    setTimeout(() => {
+                        this.messageEl.classList.remove('show');
+                    }, 2000);
+                }
+                
+                updateTimerDisplay() {
+                    const minutes = Math.floor(this.gameTime / 60);
+                    const seconds = this.gameTime % 60;
+                    this.timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+                
+                endGame() {
+                    this.gameActive = false;
+                    clearInterval(this.gameTimer);
+                    clearInterval(this.cellUpdateInterval);
+                    
+                    this.finalScoreValue.textContent = this.score;
+                    this.finalScore.style.display = 'block';
+                    this.startBtn.style.display = 'none';
+                }
+                
+                resetGame() {
+                    clearInterval(this.gameTimer);
+                    clearInterval(this.cellUpdateInterval);
+                    this.gameActive = false;
+                    this.startBtn.disabled = false;
+                    this.startBtn.style.display = 'block';
+                    this.finalScore.style.display = 'none';
+                    
+                    // Reset UI elements
+                    this.score = 0;
+                    this.scoreEl.textContent = this.score;
+                    this.gameTime = 5 * 60;
+                    this.updateTimerDisplay();
+                    this.messageEl.textContent = "Game reset. Click Start Game to play";
+                    this.messageEl.className = "message show";
+                    
+                    // Clear grid cells
+                    this.cells.forEach(cell => {
+                        cell.textContent = '';
+                        cell.classList.remove('correct', 'incorrect', 'dissolve');
+                    });
+                }
+                
+                showInstructions() {
+                    this.showMessage("Match the fraction at the top before it changes! +5 for correct, -2 for wrong.", "correct");
+                }
+                
+                shuffleArray(array) {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                }
+            }
+            
+            // Start the game when page loads
+            new FractionMemoryGame();
+        });
+    </script>
+</body>
+</html>
