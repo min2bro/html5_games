@@ -241,28 +241,31 @@
   <script>
     // Reviewed and enhanced puzzles
     const puzzles = [
-      {opts: [2, 9, 5, 3], ans: 9, expl: "9 is not prime (others are prime numbers)"},
-      {opts: [7, 11, 15, 13], ans: 15, expl: "15 is not prime (others are prime numbers)"},
-      {opts: [8, 27, 64, 32], ans: 32, expl: "32 is not a perfect cube (others are 2³, 3³, 4³)"},
-      {opts: [4, 8, 10, 16], ans: 10, expl: "10 is not a power of 2 (others are 2², 2³, 2⁴)"},
-      {opts: [21, 28, 35, 36], ans: 36, expl: "36 is not divisible by 7 (others are multiples of 7)"},
-      {opts: [1, 0, 2, 4], ans: 0, expl: "0 is not a positive integer (others are positive)"},
-      {opts: [13, 31, 46, 17], ans: 46, expl: "46 is even (others are odd)"},
-      {opts: [3, 5, 7, 9], ans: 9, expl: "9 is composite (others are prime numbers)"},
-      {opts: [49, 64, 25, 81], ans: 64, expl: "64 is an even square (others are odd squares)"},
-      {opts: [5, 15, 20, 30], ans: 5, expl: "5 is prime (others are composite numbers)"},
-      {opts: [3, 5, 9, 15], ans: 5, expl: "5 is not divisible by 3 (others are multiples of 3)"},
-      {opts: [81, 27, 243, 64], ans: 64, expl: "64 is not a power of 3 (others are 3³, 3⁴, 3⁵)"},
-      {opts: [2, 4, 8, 15], ans: 15, expl: "15 is not a power of 2 (others are 2¹, 2², 2³)"},
-      {opts: [18, 24, 30, 44], ans: 44, expl: "44 is not divisible by 6 (others are multiples of 6)"},
-      {opts: [12, 18, 30, 42], ans: 42, expl: "42 is not divisible by 4 (others are multiples of 4)"},
-      {opts: [14, 21, 35, 49], ans: 14, expl: "14 is not a multiple of 7 (others are multiples of 7)"},
-      {opts: [16, 25, 36, 50], ans: 50, expl: "50 is not a perfect square (others are 4², 5², 6²)"},
-      {opts: [3, 6, 9, 12], ans: 3, expl: "3 is the only prime number (others are composite)"},
-      {opts: [100, 1000, 10000, 100000], ans: 100, expl: "100 is the only one that's not a power of 10 (others are 10³, 10⁴, 10⁵)"},
-      {opts: [11, 22, 33, 45], ans: 45, expl: "45 is not a multiple of 11 (others are multiples of 11)"}
-    ];
-    
+  {opts: [2, 9, 5, 3], ans: 9, expl: "9 is not prime (others are prime numbers)"},
+  {opts: [7, 11, 15, 13], ans: 15, expl: "15 is not prime (others are prime numbers)"},
+  {opts: [8, 27, 64, 32], ans: 32, expl: "32 is not a perfect cube (others are 2³, 3³, 4³)"},
+  {opts: [4, 8, 10, 16], ans: 10, expl: "10 is not a power of 2 (others are 2², 2³, 2⁴)"},
+  {opts: [21, 28, 35, 36], ans: 36, expl: "36 is not divisible by 7 (others are multiples of 7)"},
+  // CHANGED: now all about divisibility by 2
+  {opts: [2, 4, 6, 9], ans: 9, expl: "9 is not even (others are even numbers)"},
+  {opts: [13, 31, 46, 17], ans: 46, expl: "46 is even (others are odd)"},
+  {opts: [3, 5, 7, 9], ans: 9, expl: "9 is composite (others are prime numbers)"},
+  {opts: [49, 64, 25, 81], ans: 64, expl: "64 is an even square (others are odd squares)"},
+  {opts: [20, 25, 30, 17], ans: 17, expl: "17 is not divisible by 5 (others are multiples of 5)"},
+  {opts: [3, 5, 9, 15], ans: 5, expl: "5 is not divisible by 3 (others are multiples of 3)"},
+  {opts: [81, 27, 243, 64], ans: 64, expl: "64 is not a power of 3 (others are 3³, 3⁴, 3⁵)"},
+  {opts: [2, 4, 8, 15], ans: 15, expl: "15 is not a power of 2 (others are 2¹, 2², 2³)"},
+  {opts: [18, 24, 30, 44], ans: 44, expl: "44 is not divisible by 6 (others are multiples of 6)"},
+  {opts: [12, 18, 30, 43], ans: 43, expl: "43 is not divisible by 6 (others are multiples of 6)"},
+  // CHANGED: now about cube numbers
+  {opts: [8, 27, 64, 14], ans: 14, expl: "14 is not a perfect cube (others are 2³, 3³, 4³)"},
+  {opts: [16, 25, 36, 50], ans: 50, expl: "50 is not a perfect square (others are 4², 5², 6²)"},
+  {opts: [3, 6, 9, 12], ans: 3, expl: "3 is the only prime number (others are composite)"},
+  // CHANGED: now about powers of 10 correctly
+  {opts: [12, 15, 18, 23], ans: 23, expl: "23 is not divisible by 3 (others are multiples of 3)"},
+  {opts: [11, 22, 33, 45], ans: 45, expl: "45 is not a multiple of 11 (others are multiples of 11)"}
+];
+
     let puzzleSeq = [], score = 0, idx = 0, timer = 60, duration = 60, tmInt, running = false;
     
     function shuffle(arr) {
