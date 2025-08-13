@@ -2,606 +2,688 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.0/DragDropTouch.js"></script>
-    <title>Balance Beam Game</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+   <meta charset="UTF-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+   <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.0/DragDropTouch.js"></script>
+   <title>Balance Beam Game</title>
+   <style>
+       * {
+           box-sizing: border-box;
+           margin: 0;
+           padding: 0;
+       }
 
-        body {
-            font-family: 'nyt-franklin', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            background: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            color: #121212;
-            padding: 20px 10px;
-            line-height: 1.4;
-        }
+       body {
+           font-family: 'nyt-franklin', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+           background: #ffffff;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           min-height: 100vh;
+           color: #121212;
+           padding: 20px 10px;
+           line-height: 1.4;
+       }
 
-        h1 {
-            margin: 0 0 8px 0;
-            color: #121212;
-            font-size: clamp(1.8rem, 5vw, 2.5rem);
-            font-weight: 700;
-            text-align: center;
-            letter-spacing: -0.02em;
-        }
+       h1 {
+           margin: 0 0 8px 0;
+           color: #121212;
+           font-size: clamp(1.8rem, 5vw, 2.5rem);
+           font-weight: 700;
+           text-align: center;
+           letter-spacing: -0.02em;
+       }
 
-        .subtitle {
-            color: #666;
-            font-size: clamp(0.85rem, 3vw, 1rem);
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 400;
-            max-width: 600px;
-            padding: 0 10px;
-        }
+       .subtitle {
+           color: #666;
+           font-size: clamp(0.85rem, 3vw, 1rem);
+           text-align: center;
+           margin-bottom: 20px;
+           font-weight: 400;
+           max-width: 600px;
+           padding: 0 10px;
+       }
 
-        .game-area {
-            width: 100%;
-            max-width: 600px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 1px solid #e5e5e5;
-            background: white;
-            padding: 20px 15px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            border-radius: 4px;
-        }
+       .game-area {
+           width: 100%;
+           max-width: 600px;
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           border: 1px solid #e5e5e5;
+           background: white;
+           padding: 20px 15px;
+           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+           border-radius: 4px;
+       }
 
-        .level-info {
-            align-self: flex-start;
-            font-size: clamp(0.9rem, 3vw, 1rem);
-            margin-bottom: 15px;
-            color: #666;
-            font-weight: 500;
-        }
+       .level-info {
+           align-self: flex-start;
+           font-size: clamp(0.9rem, 3vw, 1rem);
+           margin-bottom: 15px;
+           color: #666;
+           font-weight: 500;
+       }
 
-        .scale-container {
-            position: relative;
-            width: 100%;
-            height: 200px;
-            margin: 25px 0;
-        }
+       .scale-container {
+           position: relative;
+           width: 100%;
+           height: 200px;
+           margin: 25px 0;
+       }
 
-        .pivot {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 10px;
-            height: 50px;
-            background: #121212;
-            transform: translateX(-50%);
-            border-radius: 2px 2px 0 0;
-        }
+       .pivot {
+           position: absolute;
+           bottom: 0;
+           left: 50%;
+           width: 10px;
+           height: 50px;
+           background: #121212;
+           transform: translateX(-50%);
+           border-radius: 2px 2px 0 0;
+       }
 
-        .beam {
-            position: absolute;
-            bottom: 45px;
-            left: 50%;
-            width: 80%;
-            max-width: 400px;
-            height: 6px;
-            background: #121212;
-            transform: translateX(-50%) rotate(0deg);
-            transform-origin: center center;
-            transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-        }
+       .beam {
+           position: absolute;
+           bottom: 45px;
+           left: 50%;
+           width: 80%;
+           max-width: 400px;
+           height: 6px;
+           background: #121212;
+           transform: translateX(-50%) rotate(0deg);
+           transform-origin: center center;
+           transition: transform 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+       }
 
-        .pan {
-            position: absolute;
-            bottom: 0;
-            width: 80px;
-            height: 14px;
-            background: #121212;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.75rem;
-            border-radius: 2px 2px 0 0;
-        }
+       .pan {
+           position: absolute;
+           bottom: 0;
+           width: 80px;
+           height: 14px;
+           background: #121212;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           color: white;
+           font-weight: 600;
+           font-size: 0.75rem;
+           border-radius: 2px 2px 0 0;
+       }
 
-        .pan.left {
-            left: 18%;
-        }
+       .pan.left {
+           left: 18%;
+       }
 
-        .pan.right {
-            right: 18%;
-        }
+       .pan.right {
+           right: 18%;
+       }
 
-        .drop-zone {
-            position: absolute;
-            bottom: 70px;
-            width: 80px;
-            height: 80px;
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px dashed #d0d0d0;
-            display: flex;
-            flex-direction: row;
-            align-items: flex-end;
-            justify-content: center;
-            gap: 3px;
-            min-height: 80px;
-            border-radius: 4px;
-        }
+       .drop-zone {
+           position: absolute;
+           bottom: 70px;
+           width: 80px;
+           height: 80px;
+           background: rgba(0, 0, 0, 0.02);
+           border: 1px dashed #d0d0d0;
+           display: flex;
+           flex-direction: row;
+           align-items: flex-end;
+           justify-content: center;
+           gap: 3px;
+           min-height: 80px;
+           border-radius: 4px;
+       }
 
-        .drop-zone.left {
-            left: 18%;
-        }
+       .drop-zone.left {
+           left: 18%;
+       }
 
-        .drop-zone.right {
-            right: 18%;
-        }
+       .drop-zone.right {
+           right: 18%;
+       }
 
-        .block-bar {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #e5e5e5;
-            background: #fafafa;
-            border-radius: 4px;
-            width: 100%;
-            min-height: 90px;
-        }
+       .block-bar {
+           display: flex;
+           gap: 8px;
+           flex-wrap: wrap;
+           justify-content: center;
+           margin-bottom: 20px;
+           padding: 15px;
+           border: 1px solid #e5e5e5;
+           background: #fafafa;
+           border-radius: 4px;
+           width: 100%;
+           min-height: 90px;
+       }
 
-        .block {
-            width: 45px;
-            height: 45px;
-            background: #ffffff;
-            color: #121212;
-            border: 2px solid #121212;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: grab;
-            user-select: none;
-            transition: all 0.2s ease;
-            border-radius: 3px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+       .block {
+           width: 45px;
+           height: 45px;
+           background: #ffffff;
+           color: #121212;
+           border: 2px solid #121212;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           font-weight: 700;
+           font-size: 1rem;
+           cursor: grab;
+           user-select: none;
+           transition: all 0.2s ease;
+           border-radius: 3px;
+           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+       }
 
-        .block.dragging {
-            opacity: 0.7;
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
+       .block.dragging {
+           opacity: 0.7;
+           transform: scale(1.05);
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+       }
 
-        .block:hover {
-            transform: scale(1.03);
-        }
+       .block:hover {
+           transform: scale(1.03);
+       }
 
-        .info {
-            margin-top: 15px;
-            font-size: clamp(0.9rem, 3vw, 1rem);
-            font-weight: 400;
-            text-align: center;
-            color: #666;
-            min-height: 2.5em;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-        }
+       .block.selected {
+           background: #007bff;
+           color: white;
+           border-color: #007bff;
+           transform: scale(1.05);
+           box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+       }
 
-        .success {
-            color: #00a86b;
-            font-weight: 600;
-        }
+       .drop-zone.highlight {
+           background: rgba(0, 123, 255, 0.1);
+           border-color: #007bff;
+           border-width: 2px;
+       }
 
-        .fail {
-            color: #d73027;
-            font-weight: 600;
-        }
+       .tap-instruction {
+           font-size: 0.85rem;
+           color: #666;
+           text-align: center;
+           margin-top: 5px;
+           font-style: italic;
+       }
 
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            width: 100%;
-            justify-content: center;
-        }
+       .info {
+           margin-top: 15px;
+           font-size: clamp(0.9rem, 3vw, 1rem);
+           font-weight: 400;
+           text-align: center;
+           color: #666;
+           min-height: 2.5em;
+           display: flex;
+           align-items: center;
+           padding: 0 10px;
+       }
 
-        .btn {
-            padding: 10px 20px;
-            background: #121212;
-            color: white;
-            border: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.2s ease;
-            border-radius: 3px;
-            min-width: 120px;
-        }
+       .success {
+           color: #00a86b;
+           font-weight: 600;
+       }
 
-        .btn:hover {
-            background: #333;
-        }
+       .fail {
+           color: #d73027;
+           font-weight: 600;
+       }
 
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
+       .controls {
+           display: flex;
+           gap: 10px;
+           margin-top: 15px;
+           width: 100%;
+           justify-content: center;
+       }
 
-        .btn.reset {
-            background: #f0f0f0;
-            color: #121212;
-            border: 1px solid #d0d0d0;
-        }
+       .btn {
+           padding: 10px 20px;
+           background: #121212;
+           color: white;
+           border: none;
+           font-size: 0.85rem;
+           font-weight: 600;
+           cursor: pointer;
+           text-transform: uppercase;
+           letter-spacing: 0.5px;
+           transition: all 0.2s ease;
+           border-radius: 3px;
+           min-width: 120px;
+       }
 
-        .btn.reset:hover {
-            background: #e5e5e5;
-        }
+       .btn:hover {
+           background: #333;
+       }
 
-        .difficulty {
-            display: flex;
-            gap: 5px;
-            margin: 15px 0;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+       .btn:disabled {
+           background: #ccc;
+           cursor: not-allowed;
+       }
 
-        .difficulty-btn {
-            padding: 6px 12px;
-            background: #f0f0f0;
-            border: 1px solid #d0d0d0;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+       .btn.reset {
+           background: #f0f0f0;
+           color: #121212;
+           border: 1px solid #d0d0d0;
+       }
 
-        .difficulty-btn.active {
-            background: #121212;
-            color: white;
-            border-color: #121212;
-        }
+       .btn.reset:hover {
+           background: #e5e5e5;
+       }
 
-        @media (max-width: 480px) {
-            .game-area {
-                padding: 15px 10px;
-            }
+       .difficulty {
+           display: flex;
+           gap: 5px;
+           margin: 15px 0;
+           justify-content: center;
+           flex-wrap: wrap;
+       }
 
-            .scale-container {
-                height: 170px;
-                margin: 15px 0;
-            }
+       .difficulty-btn {
+           padding: 6px 12px;
+           background: #f0f0f0;
+           border: 1px solid #d0d0d0;
+           border-radius: 20px;
+           font-size: 0.8rem;
+           cursor: pointer;
+           transition: all 0.2s ease;
+       }
 
-            .beam {
-                width: 90%;
-            }
+       .difficulty-btn.active {
+           background: #121212;
+           color: white;
+           border-color: #121212;
+       }
 
-            .pan {
-                width: 70px;
-            }
+       @media (max-width: 480px) {
+           .game-area {
+               padding: 15px 10px;
+           }
 
-            .drop-zone {
-                width: 70px;
-                height: 70px;
-            }
+           .scale-container {
+               height: 170px;
+               margin: 15px 0;
+           }
 
-            .pan.left {
-                left: 10%;
-            }
+           .beam {
+               width: 90%;
+           }
 
-            .pan.right {
-                right: 10%;
-            }
+           .pan {
+               width: 70px;
+           }
 
-            .drop-zone.left {
-                left: 10%;
-            }
+           .drop-zone {
+               width: 70px;
+               height: 70px;
+           }
 
-            .drop-zone.right {
-                right: 10%;
-            }
+           .pan.left {
+               left: 10%;
+           }
 
-            .block {
-                width: 40px;
-                height: 40px;
-                font-size: 0.9rem;
-            }
+           .pan.right {
+               right: 10%;
+           }
 
-            .btn {
-                padding: 8px 15px;
-                min-width: 110px;
-                font-size: 0.8rem;
-            }
-        }
-    </style>
+           .drop-zone.left {
+               left: 10%;
+           }
+
+           .drop-zone.right {
+               right: 10%;
+           }
+
+           .block {
+               width: 40px;
+               height: 40px;
+               font-size: 0.9rem;
+           }
+
+           .btn {
+               padding: 8px 15px;
+               min-width: 110px;
+               font-size: 0.8rem;
+           }
+       }
+   </style>
 </head>
 
 <body>
-    <h1>Balance Beam</h1>
-    <p class="subtitle">Place blocks on both sides to balance the scale perfectly</p>
-    
-    <!-- <div class="difficulty">
-        <div class="difficulty-btn active" data-difficulty="0">Easy</div>
-        <div class="difficulty-btn" data-difficulty="3">Medium</div>
-        <div class="difficulty-btn" data-difficulty="7">Hard</div>
-    </div> -->
-    
-    <div class="game-area">
-        <div class="level-info">Level <span id="levelNum">1</span>/10</div>
-        <div class="block-bar" id="blockBar"></div>
-        <div class="scale-container">
-            <div class="pivot"></div>
-            <div class="beam" id="beam"></div>
-            <div class="pan left" id="leftPan">0</div>
-            <div class="pan right" id="rightPan">0</div>
-            <div class="drop-zone left" id="leftZone"></div>
-            <div class="drop-zone right" id="rightZone"></div>
-        </div>
+   <h1>Balance Beam</h1>
+   <p class="subtitle">Place blocks on both sides to balance the scale perfectly</p>
 
-        <div class="info" id="message">Drag blocks onto the pans to balance</div>
-        
-        <div class="controls">
-            <button class="btn reset" id="resetBtn">Reset</button>
-            <button class="btn" id="nextBtn" disabled>Next Level</button>
-        </div>
-    </div>
+   <!-- <div class="difficulty">
+       <div class="difficulty-btn active" data-difficulty="0">Easy</div>
+       <div class="difficulty-btn" data-difficulty="3">Medium</div>
+       <div class="difficulty-btn" data-difficulty="7">Hard</div>
+   </div> -->
 
-    <script>
-        const levels = [
-            // Easy
-            // { blocks: [1, 1], solution: 1 },
-            { blocks: [2, 3, 1, 1, 1], solution: 4 },
-            { blocks: [1,2,1, 1, 3, 2], solution: 5 },
-            
-            // Medium
-            { blocks: [2, 1, 1, 3, 2,1], solution: 5 },
-            { blocks: [3,2,1, 4, 3, 5,2], solution: 10 },
-            { blocks: [6,2, 5, 2, 5, 3,2,1], solution: 13 },
-            { blocks: [5, 4, 2, 1, 3, 3, 1, 5], solution: 12 },
-            
-            // Hard
-            { blocks: [10, 9, 7, 3, 3, 6, 2,2,1, 3], solution: 23 },
-            { blocks: [11, 10, 5,3, 7, 3,2, 2, 1], solution: 22 },
-            { blocks: [12, 6,5, 5,4, 8, 6, 3,2, 4, 2,1], solution: 29 }
-        ];
-        
-        let currentLevel = 0;
-        let blockLocations = {};
-        let leftWeight = 0, rightWeight = 0;
+   <div class="game-area">
+       <div class="level-info">Level <span id="levelNum">1</span>/10</div>
+       <div class="block-bar" id="blockBar"></div>
+       <div class="scale-container">
+           <div class="pivot"></div>
+           <div class="beam" id="beam"></div>
+           <div class="pan left" id="leftPan">0</div>
+           <div class="pan right" id="rightPan">0</div>
+           <div class="drop-zone left" id="leftZone"></div>
+           <div class="drop-zone right" id="rightZone"></div>
+       </div>
 
-        // DOM elements
-        const blockBar = document.getElementById('blockBar');
-        const leftZone = document.getElementById('leftZone');
-        const rightZone = document.getElementById('rightZone');
-        const beam = document.getElementById('beam');
-        const message = document.getElementById('message');
-        const leftPan = document.getElementById('leftPan');
-        const rightPan = document.getElementById('rightPan');
-        const nextBtn = document.getElementById('nextBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const levelNum = document.getElementById('levelNum');
-        const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+       <div class="info" id="message">Drag blocks onto the pans to balance</div>
+       <div class="tap-instruction" id="tapInstruction" style="display: none;">Tap a block to select, then tap a drop
+           zone to place it</div>
 
-        // Initialize game
-        function initGame() {
-            startLevel();
-            setupEventListeners();
-        }
+       <div class="controls">
+           <button class="btn reset" id="resetBtn">Reset</button>
+           <button class="btn" id="nextBtn" disabled>Next Level</button>
+       </div>
+   </div>
 
-        function startLevel() {
-            // Reset state
-            blockBar.innerHTML = '';
-            leftZone.innerHTML = '';
-            rightZone.innerHTML = '';
-            leftWeight = 0;
-            rightWeight = 0;
-            blockLocations = {};
-            message.textContent = 'Drag blocks onto the pans to balance';
-            message.className = 'info';
-            nextBtn.disabled = true;
-            levelNum.textContent = currentLevel + 1;
-            
-            // Create blocks for current level
-            const level = levels[currentLevel];
-            level.blocks.forEach((weight, idx) => {
-                const block = document.createElement('div');
-                block.className = 'block';
-                block.textContent = weight;
-                block.setAttribute('data-weight', weight);
-                block.setAttribute('data-id', idx);
-                block.draggable = true;
-                blockBar.appendChild(block);
-                blockLocations[idx] = 'bar';
-                attachDragListeners(block);
-            });
-            
-            updateScale();
-        }
+   <script>
+       const levels = [
+           // Easy
+           // { blocks: [1, 1], solution: 1 },
+           { blocks: [2, 3, 1, 1, 1], solution: 4 },
+           { blocks: [1, 2, 1, 1, 3, 2], solution: 5 },
 
-        function setupEventListeners() {
-            // Next level button
-            nextBtn.addEventListener('click', () => {
-                if (currentLevel < levels.length - 1) {
-                    currentLevel++;
-                    startLevel();
-                } else {
-                    message.textContent = '🎉 All levels completed! Great work!';
-                    nextBtn.disabled = true;
-                }
-            });
+           // Medium
+           { blocks: [2, 1, 1, 3, 2, 1], solution: 5 },
+           { blocks: [3, 2, 1, 4, 3, 5, 2], solution: 10 },
+           { blocks: [6, 2, 5, 2, 5, 3, 2, 1], solution: 13 },
+           { blocks: [5, 4, 2, 1, 3, 3, 1, 5], solution: 12 },
 
-            // Reset button
-            resetBtn.addEventListener('click', () => {
-                startLevel();
-            });
+           // Hard
+           { blocks: [10, 9, 7, 3, 3, 6, 2, 2, 1, 3], solution: 23 },
+           { blocks: [11, 10, 5, 3, 7, 3, 2, 2, 1], solution: 22 },
+           { blocks: [12, 6, 5, 5, 4, 8, 6, 3, 2, 4, 2, 1], solution: 29 }
+       ];
 
-            // Difficulty buttons
-            difficultyBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    difficultyBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentLevel = parseInt(btn.dataset.difficulty);
-                    startLevel();
-                });
-            });
+       let currentLevel = 0;
+       let blockLocations = {};
+       let leftWeight = 0, rightWeight = 0;
+       let selectedBlock = null;
+       let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
 
-            // Drop zones
-            makeDropHandler('left', leftZone);
-            makeDropHandler('right', rightZone);
-            makeDropHandler('bar', blockBar);
-        }
+       // DOM elements
+       const blockBar = document.getElementById('blockBar');
+       const leftZone = document.getElementById('leftZone');
+       const rightZone = document.getElementById('rightZone');
+       const beam = document.getElementById('beam');
+       const message = document.getElementById('message');
+       const leftPan = document.getElementById('leftPan');
+       const rightPan = document.getElementById('rightPan');
+       const nextBtn = document.getElementById('nextBtn');
+       const resetBtn = document.getElementById('resetBtn');
+       const levelNum = document.getElementById('levelNum');
+       const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+       const tapInstruction = document.getElementById('tapInstruction');
 
-        function makeDropHandler(zoneName, zoneElement) {
-            zoneElement.addEventListener('dragover', e => e.preventDefault());
-            zoneElement.addEventListener('drop', e => {
-                e.preventDefault();
-                const id = e.dataTransfer.getData('text/plain');
-                const block = document.querySelector(`.block[data-id='${id}']`);
-                if (!block) return;
-                
-                const weight = parseInt(block.getAttribute('data-weight'));
-                const prevLoc = blockLocations[id];
-                
-                if (prevLoc === zoneName) return;
-                
-                // Update weights
-                if (prevLoc === 'left') leftWeight -= weight;
-                else if (prevLoc === 'right') rightWeight -= weight;
-                
-                if (zoneName === 'left') leftWeight += weight;
-                else if (zoneName === 'right') rightWeight += weight;
-                
-                // Move element
-                zoneElement.appendChild(block);
-                blockLocations[id] = zoneName;
-                attachDragListeners(block);
-                
-                updateScale();
-            });
-        }
+       // Initialize game
+       function initGame() {
+           // Debug log to check touch detection
+           console.log('Touch device detected:', isTouchDevice);
+           console.log('Touch tests - ontouchstart:', 'ontouchstart' in window);
+           console.log('Touch tests - maxTouchPoints:', navigator.maxTouchPoints);
+           console.log('Touch tests - msMaxTouchPoints:', navigator.msMaxTouchPoints);
 
-        function updateScale() {
-            leftPan.textContent = leftWeight;
-            rightPan.textContent = rightWeight;
-            
-            // Calculate beam rotation
-            const diff = leftWeight - rightWeight;
-            const maxTilt = 12;
-            beam.style.transform = `translateX(-50%) rotate(${-diff * maxTilt / 20}deg)`;
-            
-            // Check if all blocks are placed
-            const allPlaced = Object.values(blockLocations).every(loc => loc !== 'bar');
-            
-            if (allPlaced) {
-                if (leftWeight === rightWeight) {
-                    message.textContent = '🎉 Perfectly balanced! Well done!';
-                    message.className = 'info success';
-                    nextBtn.disabled = false;
-                } else {
-                    message.textContent = 'All blocks placed, but not balanced. Try again!';
-                    message.className = 'info fail';
-                    nextBtn.disabled = true;
-                }
-            } else {
-                message.textContent = 'Drag blocks onto the pans to balance';
-                message.className = 'info';
-                nextBtn.disabled = true;
-            }
-        }
+           startLevel();
+           setupEventListeners();
+       }
 
-        function attachDragListeners(block) {
-    // Desktop drag events
-    block.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('text/plain', e.target.getAttribute('data-id'));
-        e.dataTransfer.effectAllowed = 'move';
-        e.target.classList.add('dragging');
-    });
-    block.addEventListener('dragend', e => {
-        e.target.classList.remove('dragging');
-    });
+       function startLevel() {
+           // Reset state
+           blockBar.innerHTML = '';
+           leftZone.innerHTML = '';
+           rightZone.innerHTML = '';
+           leftWeight = 0;
+           rightWeight = 0;
+           blockLocations = {};
+           selectedBlock = null;
+           clearHighlights();
 
-    // Mobile touch events
-    block.addEventListener('touchstart', e => {
-        const touch = e.touches[0];
-        block.classList.add('dragging');
-        block.dataset.touchId = touch.identifier;
-        block.dataset.startX = touch.clientX;
-        block.dataset.startY = touch.clientY;
-        block.dataset.origParent = block.parentNode.id;
-        e.preventDefault();
-    });
+           // Show appropriate instructions based on device
+           if (isTouchDevice) {
+               message.textContent = 'Tap a block, then tap where to place it';
+               // Visual indicator in title for debugging
+               document.querySelector('h1').textContent = 'Balance Beam (Touch Mode)';
+           } else {
+               message.textContent = 'Drag blocks or tap to select and place';
+               document.querySelector('h1').textContent = 'Balance Beam';
+           }
+           tapInstruction.style.display = 'block'; // Always show tap instruction
 
-    block.addEventListener('touchmove', e => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        block.style.position = 'absolute';
-        block.style.zIndex = 1000;
-        block.style.left = (touch.clientX - block.offsetWidth / 2) + 'px';
-        block.style.top = (touch.clientY - block.offsetHeight / 2) + 'px';
-    });
+           message.className = 'info';
+           nextBtn.disabled = true;
+           levelNum.textContent = currentLevel + 1;
 
-    block.addEventListener('touchend', e => {
-        e.preventDefault();
-        block.classList.remove('dragging');
-        block.style.position = '';
-        block.style.left = '';
-        block.style.top = '';
-        block.style.zIndex = '';
+           // Create blocks for current level
+           const level = levels[currentLevel];
+           level.blocks.forEach((weight, idx) => {
+               const block = document.createElement('div');
+               block.className = 'block';
+               block.textContent = weight;
+               block.setAttribute('data-weight', weight);
+               block.setAttribute('data-id', idx);
+               block.draggable = !isTouchDevice; // Disable draggable on touch devices
+               blockBar.appendChild(block);
+               blockLocations[idx] = 'bar';
+               attachEventListeners(block);
+           });
 
-        const touch = e.changedTouches[0];
-        const dropZones = [leftZone, rightZone, blockBar];
-        let dropped = false;
+           updateScale();
+       }
 
-        dropZones.forEach(zone => {
-            const rect = zone.getBoundingClientRect();
-            if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
-                touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
-                zone.appendChild(block);
-                handleWeightChange(block, zone.id);
-                dropped = true;
-            }
-        });
+       function setupEventListeners() {
+           // Next level button
+           nextBtn.addEventListener('click', () => {
+               if (currentLevel < levels.length - 1) {
+                   currentLevel++;
+                   startLevel();
+               } else {
+                   message.textContent = '🎉 All levels completed! Great work!';
+                   nextBtn.disabled = true;
+               }
+           });
 
-        // If not dropped anywhere, return to original
-        if (!dropped) {
-            document.getElementById(block.dataset.origParent).appendChild(block);
-        }
-    });
-}
+           // Reset button
+           resetBtn.addEventListener('click', () => {
+               startLevel();
+           });
 
-// Helper for updating weights when dropping via touch
-function handleWeightChange(block, zoneName) {
-    const id = block.getAttribute('data-id');
-    const weight = parseInt(block.getAttribute('data-weight'));
-    const prevLoc = blockLocations[id];
+           // Difficulty buttons
+           difficultyBtns.forEach(btn => {
+               btn.addEventListener('click', () => {
+                   difficultyBtns.forEach(b => b.classList.remove('active'));
+                   btn.classList.add('active');
+                   currentLevel = parseInt(btn.dataset.difficulty);
+                   startLevel();
+               });
+           });
 
-    if (prevLoc === zoneName) return;
+           // Drop zones - desktop drag and mobile tap
+           makeDropHandler('left', leftZone);
+           makeDropHandler('right', rightZone);
+           makeDropHandler('bar', blockBar);
 
-    if (prevLoc === 'leftZone') leftWeight -= weight;
-    else if (prevLoc === 'rightZone') rightWeight -= weight;
+           // Always add tap handlers for drop zones (works with both touch and mouse)
+           console.log('Adding tap handlers to drop zones');
+           addTapHandler(leftZone, 'left');
+           addTapHandler(rightZone, 'right');
+           addTapHandler(blockBar, 'bar');
+       }
 
-    if (zoneName === 'leftZone') leftWeight += weight;
-    else if (zoneName === 'rightZone') rightWeight += weight;
+       function makeDropHandler(zoneName, zoneElement) {
+           zoneElement.addEventListener('dragover', e => e.preventDefault());
+           zoneElement.addEventListener('drop', e => {
+               e.preventDefault();
+               const id = e.dataTransfer.getData('text/plain');
+               const block = document.querySelector(`.block[data-id='${id}']`);
+               if (!block) return;
 
-    blockLocations[id] = zoneName;
-    updateScale();
-}
+               const weight = parseInt(block.getAttribute('data-weight'));
+               const prevLoc = blockLocations[id];
+
+               if (prevLoc === zoneName) return;
+
+               // Update weights
+               if (prevLoc === 'left') leftWeight -= weight;
+               else if (prevLoc === 'right') rightWeight -= weight;
+
+               if (zoneName === 'left') leftWeight += weight;
+               else if (zoneName === 'right') rightWeight += weight;
+
+               // Move element
+               zoneElement.appendChild(block);
+               blockLocations[id] = zoneName;
+               attachEventListeners(block);
+
+               updateScale();
+           });
+       }
+
+       function updateScale() {
+           leftPan.textContent = leftWeight;
+           rightPan.textContent = rightWeight;
+
+           // Calculate beam rotation
+           const diff = leftWeight - rightWeight;
+           const maxTilt = 12;
+           beam.style.transform = `translateX(-50%) rotate(${-diff * maxTilt / 20}deg)`;
+
+           // Check if all blocks are placed
+           const allPlaced = Object.values(blockLocations).every(loc => loc !== 'bar');
+
+           if (allPlaced) {
+               if (leftWeight === rightWeight) {
+                   message.textContent = '🎉 Perfectly balanced! Well done!';
+                   message.className = 'info success';
+                   nextBtn.disabled = false;
+               } else {
+                   message.textContent = 'All blocks placed, but not balanced. Try again!';
+                   message.className = 'info fail';
+                   nextBtn.disabled = true;
+               }
+           } else {
+               if (isTouchDevice) {
+                   message.textContent = 'Tap a block, then tap where to place it';
+               } else {
+                   message.textContent = 'Drag blocks or tap to select and place';
+               }
+               message.className = 'info';
+               nextBtn.disabled = true;
+           }
+       }
+
+       function attachEventListeners(block) {
+           console.log('Attaching event listeners to block:', block.textContent, 'Touch device:', isTouchDevice);
+
+           // Always add click listener for tap-to-select (works on both touch and mouse)
+           console.log('Adding click listener');
+           block.addEventListener('click', (e) => {
+               console.log('Block clicked:', block.textContent);
+               e.preventDefault();
+               e.stopPropagation();
+               selectBlock(block);
+           });
+
+           // Also add drag events for desktop drag-and-drop support
+           if (!isTouchDevice) {
+               console.log('Adding drag listeners for desktop');
+               block.addEventListener('dragstart', e => {
+                   e.dataTransfer.setData('text/plain', e.target.getAttribute('data-id'));
+                   e.dataTransfer.effectAllowed = 'move';
+                   e.target.classList.add('dragging');
+               });
+               block.addEventListener('dragend', e => {
+                   e.target.classList.remove('dragging');
+               });
+           }
+       }
+
+       // Touch tap-and-drop functions
+       function selectBlock(block) {
+           console.log('selectBlock called for block:', block.textContent);
+
+           // Clear previous selection
+           if (selectedBlock) {
+               selectedBlock.classList.remove('selected');
+           }
+           clearHighlights();
+
+           // Select new block
+           selectedBlock = block;
+           block.classList.add('selected');
+
+           console.log('Block selected, adding highlights');
+
+           // Highlight available drop zones
+           highlightDropZones();
+       }
+
+       function clearHighlights() {
+           leftZone.classList.remove('highlight');
+           rightZone.classList.remove('highlight');
+       }
+
+       function highlightDropZones() {
+           leftZone.classList.add('highlight');
+           rightZone.classList.add('highlight');
+       }
+
+       function addTapHandler(zoneElement, zoneName) {
+           zoneElement.addEventListener('click', (e) => {
+               if (selectedBlock && (e.target === zoneElement || zoneElement.contains(e.target))) {
+                   // Don't move if clicking on a block itself
+                   if (!e.target.classList.contains('block')) {
+                       moveBlockToZone(selectedBlock, zoneElement, zoneName);
+                   }
+               }
+           });
+       }
+
+       function moveBlockToZone(block, zoneElement, zoneName) {
+           const id = block.getAttribute('data-id');
+           const weight = parseInt(block.getAttribute('data-weight'));
+           const prevLoc = blockLocations[id];
+
+           if (prevLoc === zoneName) {
+               // Deselect if tapping same location
+               selectedBlock.classList.remove('selected');
+               selectedBlock = null;
+               clearHighlights();
+               return;
+           }
+
+           // Update weights
+           if (prevLoc === 'left') leftWeight -= weight;
+           else if (prevLoc === 'right') rightWeight -= weight;
+
+           if (zoneName === 'left') leftWeight += weight;
+           else if (zoneName === 'right') rightWeight += weight;
+
+           // Move block
+           zoneElement.appendChild(block);
+           blockLocations[id] = zoneName;
+
+           // Clear selection
+           selectedBlock.classList.remove('selected');
+           selectedBlock = null;
+           clearHighlights();
+
+           // Re-attach event listeners
+           attachEventListeners(block);
+
+           updateScale();
+       }
 
 
-        // Initialize the game
-        initGame();
-    </script>
+
+
+       // Initialize the game
+       initGame();
+   </script>
 </body>
 
 </html>
