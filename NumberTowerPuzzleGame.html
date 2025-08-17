@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Tower Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for better look and feel */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .puzzle-input::-webkit-outer-spin-button,
+        .puzzle-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .puzzle-input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-100">
+
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="w-full max-w-4xl mx-auto">
+            <div class="bg-white rounded-xl shadow-2xl p-6 md:p-8 text-center">
+                <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">Number Tower Challenge</h1>
+                <p class="text-slate-600 mb-6">Fill the empty blocks. Each block's value must be the sum of the two blocks below it.</p>
+                
+                <!-- Difficulty Selector -->
+                <div class="mb-8 flex justify-center items-center gap-4">
+                    <label for="difficulty" class="text-slate-700 font-semibold">Difficulty:</label>
+                    <select id="difficulty" class="p-2 border-2 border-slate-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                        <option value="0.4">Easy</option>
+                        <option value="0.55" selected>Medium</option>
+                        <option value="0.7">Hard</option>
+                        <option value="0.8">Expert</option>
+                    </select>
+                </div>
+
+                <!-- The Pyramid Structure will be generated here by JS -->
+                <div id="pyramid-container" class="flex flex-col items-center space-y-1 md:space-y-2 mb-8"></div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap items-center justify-center gap-3 md:gap-4">
+                    <button id="new-puzzle-btn" class="flex items-center justify-center px-6 py-3 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-5 w-5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                        New Puzzle
+                    </button>
+                    <button id="check-btn" class="flex items-center justify-center px-6 py-3 bg-green-500 text-white font-bold rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-500/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-5 w-5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Check
+                    </button>
+                    <button id="reset-btn" class="flex items-center justify-center px-6 py-3 bg-yellow-500 text-white font-bold rounded-lg shadow-md hover:bg-yellow-600 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-yellow-500/50">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-5 w-5"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path><path d="M21 21v-5h-5"></path></svg>
+                        Reset
+                    </button>
+                    <button id="solve-btn" class="flex items-center justify-center px-6 py-3 bg-indigo-500 text-white font-bold rounded-lg shadow-md hover:bg-indigo-600 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-500/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-5 w-5"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 9 5c-1.9 0-3.5 1-4.5 2.5-.3.5-.5 1-.5 1.5h10Z"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+                        Solve
+                    </button>
+                </div>
+
+                <!-- Feedback Message Area -->
+                <div id="message-area" class="mt-6 p-4 rounded-lg text-center font-semibold transition-opacity duration-300 opacity-0"></div>
+            </div>
+             <footer class="text-center mt-6 text-sm text-slate-500">
+                <p>Built with HTML, Tailwind CSS, and JavaScript</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management ---
+        let solution = [];
+        let initialPuzzle = [];
+        let userInput = [];
+        let difficulty = 0.55;
+
+        // --- DOM Elements ---
+        const pyramidContainer = document.getElementById('pyramid-container');
+        const messageArea = document.getElementById('message-area');
+        const difficultySelector = document.getElementById('difficulty');
+        
+        const newPuzzleBtn = document.getElementById('new-puzzle-btn');
+        const checkBtn = document.getElementById('check-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const solveBtn = document.getElementById('solve-btn');
+
+        // --- Functions ---
+
+        /**
+         * Displays a message to the user for a few seconds.
+         * @param {string} text - The message to display.
+         * @param {string} type - 'success', 'error', or 'info'.
+         */
+        function showMessage(text, type) {
+            messageArea.textContent = text;
+            messageArea.className = `mt-6 p-4 rounded-lg text-center font-semibold transition-opacity duration-300 opacity-100 ${
+                type === 'success' ? 'bg-green-100 text-green-800' :
+                type === 'error' ? 'bg-red-100 text-red-800' :
+                'bg-blue-100 text-blue-800'
+            }`;
+            setTimeout(() => {
+                messageArea.classList.remove('opacity-100');
+                messageArea.classList.add('opacity-0');
+            }, 3000);
+        }
+
+        /**
+         * Renders the entire pyramid based on the current userInput state.
+         */
+        function renderPuzzle() {
+            pyramidContainer.innerHTML = ''; // Clear previous puzzle
+            userInput.forEach((row, rowIndex) => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'flex justify-center space-x-1 md:space-x-2';
+                row.forEach((block, colIndex) => {
+                    const input = document.createElement('input');
+                    const isClue = initialPuzzle[rowIndex][colIndex] !== null;
+                    
+                    input.type = 'number';
+                    input.className = `puzzle-input w-14 h-14 md:w-16 md:h-16 text-center text-xl md:text-2xl font-semibold rounded-lg transition-all duration-200 border-2 focus:outline-none focus:ring-4 ${
+                        isClue 
+                        ? 'bg-slate-200 border-slate-300 text-slate-700 cursor-not-allowed' 
+                        : 'bg-white border-slate-300 text-slate-800 focus:border-indigo-500 focus:ring-indigo-500/50'
+                    }`;
+                    input.value = block === null ? '' : block;
+                    input.disabled = isClue;
+                    input.dataset.row = rowIndex;
+                    input.dataset.col = colIndex;
+
+                    input.addEventListener('input', (e) => {
+                        const value = e.target.value;
+                        userInput[rowIndex][colIndex] = value === '' ? null : parseInt(value, 10);
+                    });
+
+                    rowDiv.appendChild(input);
+                });
+                pyramidContainer.appendChild(rowDiv);
+            });
+        }
+        
+        /**
+         * Logically solves a puzzle without guessing.
+         * @param {Array<Array<number|null>>} puzzleToSolve - The puzzle with nulls for empty cells.
+         * @returns {{solved: boolean, puzzle: Array<Array<number|null>>}} - An object indicating if the puzzle was solved and the final state.
+         */
+        function solvePuzzle(puzzleToSolve) {
+            let p = JSON.parse(JSON.stringify(puzzleToSolve));
+            let size = p.length;
+            let changedInIteration = true;
+
+            // Loop until no more logical deductions can be made
+            while(changedInIteration) {
+                changedInIteration = false;
+                // Work upwards
+                for (let r = size - 2; r >= 0; r--) {
+                    for (let c = 0; c < p[r].length; c++) {
+                        if (p[r][c] === null) {
+                            const belowLeft = p[r+1][c];
+                            const belowRight = p[r+1][c+1];
+                            if (belowLeft !== null && belowRight !== null) {
+                                p[r][c] = belowLeft + belowRight;
+                                changedInIteration = true;
+                            }
+                        }
+                    }
+                }
+                // Work downwards
+                for (let r = 0; r < size - 1; r++) {
+                    for (let c = 0; c < p[r].length; c++) {
+                        if (p[r][c] !== null) {
+                            const belowLeft = p[r+1][c];
+                            const belowRight = p[r+1][c+1];
+                            if (belowLeft === null && belowRight !== null) {
+                                p[r+1][c] = p[r][c] - belowRight;
+                                changedInIteration = true;
+                            } else if (belowLeft !== null && belowRight === null) {
+                                p[r+1][c+1] = p[r][c] - belowLeft;
+                                changedInIteration = true;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Check if the puzzle is fully solved (no nulls left)
+            const isSolved = !p.flat().includes(null);
+            return { solved: isSolved, puzzle: p };
+        }
+
+        /**
+         * Generates a new puzzle, updates the state, and renders it.
+         */
+        function generatePuzzle() {
+            const size = 6;
+            const maxBaseNumber = 6;
+            difficulty = parseFloat(difficultySelector.value);
+
+            let isSolvable = false;
+            let newSolution, newInitialPuzzle;
+
+            // Loop until a logically solvable puzzle is created
+            while (!isSolvable) {
+                // 1. Generate a full solution
+                newSolution = [];
+                const baseRow = Array.from({ length: size }, () => Math.floor(Math.random() * maxBaseNumber) + 1);
+                newSolution[size - 1] = baseRow;
+
+                for (let r = size - 2; r >= 0; r--) {
+                    newSolution[r] = [];
+                    for (let c = 0; c < newSolution[r + 1].length - 1; c++) {
+                        newSolution[r][c] = newSolution[r + 1][c] + newSolution[r + 1][c + 1];
+                    }
+                }
+
+                // 2. Create a puzzle by removing some blocks
+                newInitialPuzzle = JSON.parse(JSON.stringify(newSolution));
+                const allCells = [];
+                for (let r = 0; r < size; r++) {
+                    for (let c = 0; c < newSolution[r].length; c++) {
+                        allCells.push({ r, c });
+                    }
+                }
+                allCells.sort(() => 0.5 - Math.random()); // Shuffle cells
+
+                const totalCells = size * (size + 1) / 2;
+                const removeCount = Math.floor(totalCells * difficulty);
+                for (let i = 0; i < removeCount; i++) {
+                    const cell = allCells[i];
+                    newInitialPuzzle[cell.r][cell.c] = null;
+                }
+
+                // 3. Verify that the puzzle is solvable with a unique solution
+                const result = solvePuzzle(newInitialPuzzle);
+                if (result.solved) {
+                    // Optional: Double-check if the solver's result matches the original solution
+                    if (JSON.stringify(result.puzzle) === JSON.stringify(newSolution)) {
+                        isSolvable = true;
+                    }
+                }
+            }
+            
+            // 4. Update state and render the guaranteed-solvable puzzle
+            solution = newSolution;
+            initialPuzzle = newInitialPuzzle;
+            userInput = JSON.parse(JSON.stringify(initialPuzzle));
+            
+            renderPuzzle();
+            showMessage('New puzzle generated!', 'info');
+        }
+
+        /**
+         * Checks the user's solution for correctness.
+         */
+        function checkSolution() {
+            let isCorrect = true;
+            let allFilled = true;
+
+            for (let r = 0; r < solution.length; r++) {
+                for (let c = 0; c < solution[r].length; c++) {
+                    if (userInput[r][c] === null || isNaN(userInput[r][c])) {
+                        allFilled = false;
+                    }
+                    if (userInput[r][c] !== solution[r][c]) {
+                        isCorrect = false;
+                    }
+                }
+            }
+
+            if (!allFilled) {
+                showMessage('Please fill in all the blocks before checking.', 'error');
+                return;
+            }
+
+            if (isCorrect) {
+                showMessage('Congratulations! You solved the puzzle!', 'success');
+            } else {
+                showMessage('Not quite right. Keep trying!', 'error');
+            }
+        }
+
+        /**
+         * Resets the puzzle to its initial state.
+         */
+        function resetPuzzle() {
+            userInput = JSON.parse(JSON.stringify(initialPuzzle));
+            renderPuzzle();
+            showMessage('Puzzle has been reset.', 'info');
+        }
+
+        /**
+         * Fills the puzzle with the correct solution.
+         */
+        function showSolution() {
+            userInput = JSON.parse(JSON.stringify(solution));
+            renderPuzzle();
+            showMessage('Here is the solution.', 'info');
+        }
+
+        // --- Event Listeners ---
+        newPuzzleBtn.addEventListener('click', generatePuzzle);
+        checkBtn.addEventListener('click', checkSolution);
+        resetBtn.addEventListener('click', resetPuzzle);
+        solveBtn.addEventListener('click', showSolution);
+        difficultySelector.addEventListener('change', generatePuzzle);
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', generatePuzzle);
+
+    </script>
+
+</body>
+</html>
